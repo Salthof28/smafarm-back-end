@@ -6,10 +6,152 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  // output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+enum RoleUser {
+  ADMIN
+  BREEDER
+  CUSTOMER
+}
+
+enum StatusUser {
+  ACTIVE
+  BANNED
+}
+
+enum StatusTransaction {
+  WAITING
+  SENDING
+  CARE
+  FINISH
+}
+
+enum UnitCare {
+  DAY
+  WEEK
+}
+model Users {
+  id            Int               @id @default(autoincrement())
+  name          String            @db.VarChar(100)
+  email         String            @unique @db.VarChar(320)
+  phone         String            @unique @db.VarChar(20)
+  status        StatusUser
+  img_profile   String            @db.Text()
+  role          RoleUser
+  created_at    DateTime?         @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime?         @default(now()) @db.Timestamptz(6)
+  farms         Farms?            @relation("UserFarm")
+  transaction   Transaction[]
+}
+
+model Category {
+  id            Int           @id @default(autoincrement())
+  name          String        @db.VarChar(100)
+  img_category  String        @db.Text()
+  created_at    DateTime?     @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime?     @default(now()) @db.Timestamptz(6)
+  livestock     Livestock[]
+}
+
+model Farms {
+  id            Int           @id @default(autoincrement())
+  user_id       Int           @unique
+  name          String        @db.VarChar(100)
+  location      String        @db.VarChar(320)
+  imgFarm       String        @db.Text()
+  rating        Float?        @default(0)
+  created_at    DateTime?     @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime?     @default(now()) @db.Timestamptz(6)
+  users         Users         @relation("UserFarm", fields: [user_id], references: [id])
+  shelters      Shelter[]
+  transaction   Transaction[]
+}
+
+model Livestock {
+  id            Int                       @id @default(autoincrement())
+  category_id   Int
+  farm_id       Int
+  title         String                    @db.VarChar(100)
+  age           Int
+  price         Decimal                   @default(0.00) @db.Decimal(15,2)
+  stock         Int
+  description   String                    @db.Text()
+  img_animal    String[]     
+  created_at    DateTime?                 @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime?                 @default(now()) @db.Timestamptz(6)
+  category      Category                  @relation(fields: [category_id], references: [id])
+  detail_buy    DetailBuyTransaction[]
+  detail_care   DetailCareTransaction[]
+}
+
+model Shelter {
+  id            Int           @id @default(autoincrement())
+  category_id   Int
+  farm_id       Int
+  name          String        @db.VarChar(100)
+  location      String        @db.VarChar(320)
+  img_shelter   String[]
+  accomodate    Int
+  description   String        @db.Text()
+  price_day     Decimal       @default(0.00) @db.Decimal(15,2)
+  created_at    DateTime?     @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime?     @default(now()) @db.Timestamptz(6)
+  farm          Farms         @relation(fields: [farm_id], references: [id])
+  care_give     CareGive[] // perawatan yg diberikan
+}
+
+model CareGive {
+  id                    Int                   @id @default(autoincrement())
+  shelter_id            Int
+  name                  String                @db.VarChar(100)
+  price                 Decimal               @db.Decimal(15,2)
+  unit                  UnitCare
+  shelter               Shelter               @relation(fields: [shelter_id], references: [id])
+}
+model Transaction {
+  id                    Int                       @id @default(autoincrement())
+  customer_id           Int
+  farm_id               Int
+  date_transaction      DateTime?                 @default(now()) @db.Timestamptz(6)
+  total_amount          Decimal                   @default(0.00) @db.Decimal(15,2)
+  status_transaction    StatusTransaction
+  rating                Int?
+  review                String?                   @db.Text
+  created_at            DateTime?                 @default(now()) @db.Timestamptz(6)
+  updated_at            DateTime?                 @default(now()) @db.Timestamptz(6)
+  user                  Users                     @relation(fields: [customer_id], references: [id])
+  farm                  Farms                     @relation(fields: [farm_id], references: [id])
+  detail_buy            DetailBuyTransaction[]
+  detail_care           DetailCareTransaction[]
+}
+
+model DetailBuyTransaction {
+  id                    Int                   @id @default(autoincrement())
+  transaction_id        Int                   
+  livestock_id          Int
+  total_livestock       Int
+  unit_price            Decimal               @default(0.00) @db.Decimal(15,2)
+  sub_total             Decimal               @default(0.00) @db.Decimal(15,2)
+  transaction           Transaction           @relation(fields: [transaction_id], references: [id])
+  livestock             Livestock             @relation(fields: [livestock_id], references: [id])
+}
+
+model DetailCareTransaction {
+  id                    Int                   @id @default(autoincrement())
+  transaction_id        Int                   
+  livestock_id          Int
+  shelter_id            Int
+  duration_care         Int
+  start_date            DateTime              @db.Timestamptz(6)
+  finish_date           DateTime              @db.Timestamptz(6)
+  one_day_price         Decimal               @default(0.00) @db.Decimal(15,2)
+  sub_total             Decimal               @default(0.00) @db.Decimal(15,2)
+  transaction           Transaction           @relation(fields: [transaction_id], references: [id])
+  livestock             Livestock             @relation(fields: [livestock_id], references: [id])
 }
