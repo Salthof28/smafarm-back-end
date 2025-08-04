@@ -3,7 +3,7 @@ import { DatabaseException } from "../exception/database-exception";
 
 
 export function handlePrismaError(error): never {
-    // Error unique constraint, foreign key
+    // Error unique constraint, foreign key (example P1001: prisma not connect to database)
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
         throw new DatabaseException(`Database error: ${error.code} - ${error.message}`);
     }
