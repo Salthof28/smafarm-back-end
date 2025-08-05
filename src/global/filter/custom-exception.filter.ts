@@ -2,6 +2,9 @@ import { ArgumentsHost, Catch, ExceptionFilter, HttpStatus } from "@nestjs/commo
 import { CustomExceptionGen } from "../exception/exception.general";
 import { HttpAdapterHost } from "@nestjs/core";
 import { DatabaseException } from "../exception/database-exception";
+import { EmailRegisteredException } from "src/auth/exception/email-registered-exception";
+import { PhoneRegisteredException } from "src/auth/exception/phone-registered-exception";
+import { InvalidLoginException } from "src/auth/exception/invalid-login-exception";
 
 
 @Catch(CustomExceptionGen)
@@ -20,6 +23,27 @@ export class ExceptionFilterGen implements ExceptionFilter {
         }
 
         if(exception instanceof DatabaseException) {
+            responseBody = {
+                message: exception.message,
+                error: exception.name,
+                statusCode: HttpStatus.BAD_REQUEST,
+            }
+        }
+        else if(exception instanceof EmailRegisteredException) {
+            responseBody = {
+                message: exception.message,
+                error: exception.name,
+                statusCode: HttpStatus.CONFLICT,
+            }
+        }
+        else if(exception instanceof PhoneRegisteredException) {
+            responseBody = {
+                message: exception.message,
+                error: exception.name,
+                statusCode: HttpStatus.CONFLICT,
+            }
+        }
+        else if(exception instanceof InvalidLoginException) {
             responseBody = {
                 message: exception.message,
                 error: exception.name,

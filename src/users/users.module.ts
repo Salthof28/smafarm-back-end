@@ -9,7 +9,8 @@ import { UsersRepository } from './users.repository';
   imports: [ PrismaModule ],
   controllers: [UsersController],
   providers: [
-    { provide: 'UsersServiceItf' , useClass: UsersService },
+    // { provide: 'UsersServiceItf' , useClass: UsersService },
+    UsersService,
     { provide: 'UsersRepositoryItf', useClass: UsersRepository }
   ],
   exports: ['UsersRepositoryItf']
