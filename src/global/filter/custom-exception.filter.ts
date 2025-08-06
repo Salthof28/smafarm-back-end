@@ -5,6 +5,8 @@ import { DatabaseException } from "../exception/database-exception";
 import { EmailRegisteredException } from "src/auth/exception/email-registered-exception";
 import { PhoneRegisteredException } from "src/auth/exception/phone-registered-exception";
 import { InvalidLoginException } from "src/auth/exception/invalid-login-exception";
+import { TokenException } from "src/auth/exception/token-exception";
+import { UserNotFoundException } from "src/users/exception/user-not-found-exception";
 
 
 @Catch(CustomExceptionGen)
@@ -50,6 +52,21 @@ export class ExceptionFilterGen implements ExceptionFilter {
                 statusCode: HttpStatus.BAD_REQUEST,
             }
         }
+        else if(exception instanceof TokenException) {
+            responseBody = {
+                message: exception.message,
+                error: exception.name,
+                statusCode: HttpStatus.NOT_FOUND,
+            }
+        }
+        else if(exception instanceof UserNotFoundException) {
+            responseBody = {
+                message: exception.message,
+                error: exception.name,
+                statusCode: HttpStatus.NOT_FOUND,
+            }
+        }
+
         httpAdapter.reply(res, responseBody, responseBody.statusCode)
     }
 }
