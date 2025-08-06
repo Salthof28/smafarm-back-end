@@ -22,6 +22,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt-access') {
         // console.log('JWT Payload:', payload);
         const session = await this.usersRepository.findSessionbyIdToken(payload.id_token)
         if(!session) throw new UnauthorizedException('session not found, you logged out');
-        return { id: payload.sub, name: payload.name, role: payload.role, expires_at: payload.expires_at };
+        return { id: payload.sub, id_token: payload.id_token, name: payload.name, role: payload.role, expires_at: payload.expires_at };
     }
 }

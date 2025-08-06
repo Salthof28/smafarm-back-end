@@ -60,7 +60,7 @@ export class AuthController {
     }
   }
 
-  @UseGuards(JwtRefreshGuard)
+  @UseGuards(JwtAuthGuard)
   @Post('logout')
   async logout(@Request() request): Promise<SessionLogin> {
     try {
