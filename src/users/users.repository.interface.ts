@@ -10,9 +10,9 @@ export interface UsersRepositoryItf {
     findExistingUser(condition: Condition[]): Promise<Users | undefined>;
     created(body: CreateUserDto): Promise<Users>;
     loginSession(session: SessionDetailDto): Promise<SessionLogin>;
-    findSessionbyUserId(user_id: number): Promise<SessionLogin[] | undefined>;
+    findSessionbyIdToken(id_token: string): Promise<SessionLogin | undefined>;
     updateRefreshToken(newRefreshToken: UpdateRefreshTokenSessionDto): Promise<SessionLogin>;
-    deleteSession(id: string): Promise<SessionLogin>;
+    deleteSession(id_token: string): Promise<SessionLogin>;
 }
 
 

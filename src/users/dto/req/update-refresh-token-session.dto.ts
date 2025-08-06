@@ -2,8 +2,10 @@ import { RoleUser } from "@prisma/client";
 import { IsDate, IsEmail, IsNumber, IsString, Matches } from "class-validator";
 
 export class UpdateRefreshTokenSessionDto {
+    @IsNumber()
+    id: number
     @IsString()
-    id: string
+    id_token: string
     @IsString()
     refreshToken
     @IsDate()

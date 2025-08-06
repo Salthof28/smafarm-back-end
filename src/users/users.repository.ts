@@ -82,6 +82,7 @@ export class UsersRepository implements UsersRepositoryItf {
             const newLogin = await this.prisma.sessionLogin.create({
                 data: {
                     user_id: session.user_id,
+                    id_token: session.id_token,
                     refreshToken: session.refreshToken,
                     userAgent: session.userAgent,
                     ipAddress: session.ipAddress,
@@ -94,15 +95,15 @@ export class UsersRepository implements UsersRepositoryItf {
         }
     }
 
-    async findSessionbyUserId(user_id: number): Promise<SessionLogin[] | undefined> {
+    async findSessionbyIdToken(id_token: string): Promise<SessionLogin | undefined> {
         try {
-            const findAllSession: SessionLogin[] = await this.prisma.sessionLogin.findMany({
+            const findSession: SessionLogin | null = await this.prisma.sessionLogin.findUnique({
                 where: {
-                    user_id
+                    id_token
                 }
             });
-            if(findAllSession.length < 1) return undefined;
-            return findAllSession
+            if(findSession === null) return undefined;
+            return findSession
         } catch (error) {
             handlePrismaError(error);
         }
@@ -113,6 +114,7 @@ export class UsersRepository implements UsersRepositoryItf {
             const updateSession: SessionLogin = await this.prisma.sessionLogin.update({
                 where: { id: newRefreshToken.id},
                 data: {
+                    id_token: newRefreshToken.id_token,
                     refreshToken: newRefreshToken.refreshToken,
                     expires_at: newRefreshToken.expires_at
                 }
@@ -123,10 +125,10 @@ export class UsersRepository implements UsersRepositoryItf {
         }
     }
 
-    async deleteSession(id: string): Promise<SessionLogin> {
+    async deleteSession(id_token: string): Promise<SessionLogin> {
         try {
             const deleteSession: SessionLogin = await this.prisma.sessionLogin.delete({
-                where: { id }
+                where: { id_token }
             });
             return deleteSession;
         } catch (error) {

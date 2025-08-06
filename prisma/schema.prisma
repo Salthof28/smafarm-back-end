@@ -53,7 +53,8 @@ model Users {
 }
 
 model SessionLogin {
-  id            String                @id @default(uuid())
+  id            Int                   @id @default(autoincrement())
+  id_token      String                @unique @db.Uuid
   user_id       Int
   refreshToken  String
   userAgent     String?               @default("unknown")

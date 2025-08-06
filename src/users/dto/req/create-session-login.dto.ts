@@ -4,6 +4,8 @@ export class SessionDetailDto {
     @IsNumber()
     user_id: number
     @IsString()
+    id_token: string
+    @IsString()
     refreshToken
     @IsString()
     userAgent: string;

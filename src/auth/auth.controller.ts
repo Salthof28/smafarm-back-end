@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, InternalServerErrorException, Request, Req, UseGuards } from '@nestjs/common';
 import { AuthServiceItf } from './auth.service.interface';
 import { CreateUserDto } from '../users/dto/req/create-user.dto';
-import { Users } from '@prisma/client';
+import { SessionLogin, Users } from '@prisma/client';
 import { CustomExceptionGen } from '../global/exception/exception.general';
 import { LoginUserDto } from './dto/login.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -43,13 +43,29 @@ export class AuthController {
 
   @UseGuards(JwtRefreshGuard)
   @Post('refreshToken')
-  async refreshToken(@Request() request, @Req() req: ExpressRequest) {
+  async refreshToken(@Request() request, @Req() req: ExpressRequest): Promise<{ access_token: string, refresh_token: string }> {
     try {
       const authHeader = req.headers['authorization'];
       const refreshToken = typeof authHeader === 'string' ? authHeader.split(' ')[1] : undefined;
       if(!refreshToken) throw new TokenException('undefined value')
-      const newAccess = await this.authService.refreshToken(request.user.id, refreshToken);
+      const newAccess = await this.authService.refreshToken(
+        request.user.id_token,
+        request.user.tokenAccess,
+        refreshToken
+      );
       return newAccess
+    } catch (error) {
+      if(error instanceof CustomExceptionGen) throw error;
+      throw new InternalServerErrorException()
+    }
+  }
+
+  @UseGuards(JwtRefreshGuard)
+  @Post('logout')
+  async logout(@Request() request): Promise<SessionLogin> {
+    try {
+      const logoutUser = await this.authService.logout(request.user.id_token);
+      return logoutUser;
     } catch (error) {
       if(error instanceof CustomExceptionGen) throw error;
       throw new InternalServerErrorException()
