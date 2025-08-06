@@ -31,13 +31,12 @@ export class UsersRepository implements UsersRepositoryItf {
 
     }
 
-    async findById(id: number): Promise<(Users & { sessions: SessionLogin[] }) | undefined> {
+    async findById(id: number): Promise<Users | undefined> {
         try {
             const user = await this.prisma.users.findUnique({
                 where: {
                     id
-                },
-               include: { sessions: true }
+                }
             });
             if(user === null) return undefined;
             return user

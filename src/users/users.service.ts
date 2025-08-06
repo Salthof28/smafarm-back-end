@@ -1,26 +1,17 @@
-import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/req/create-user.dto';
-import { UpdateUserDto } from './dto/req/update-user.dto';
+import { Inject, Injectable } from '@nestjs/common';
+import { UsersRepositoryItf } from './users.repository.interface';
+import { UsersServiceItf } from './users.service.interface';
+import { Users } from '@prisma/client';
+import { UserNotFoundException } from './exception/user-not-found-exception';
 
 @Injectable()
-export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+export class UsersService implements UsersServiceItf {
+  constructor(@Inject('UsersRepositoryItf') private usersRepository: UsersRepositoryItf) {}
+
+  async getProfile(id: number): Promise<Users> {
+    const userProfile: Users | undefined = await this.usersRepository.findById(id);
+    if(!userProfile) throw new UserNotFoundException();
+    return userProfile;
   }
 
-  findAll() {
-    return `This action returns all users`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
-  }
 }

@@ -1,34 +1,22 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/req/create-user.dto';
-import { UpdateUserDto } from './dto/req/update-user.dto';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, UseGuards, Request, InternalServerErrorException } from '@nestjs/common';
+import { UsersServiceItf } from './users.service.interface';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { Users } from '@prisma/client';
+import { CustomExceptionGen } from 'src/global/exception/exception.general';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(@Inject('UsersServiceItf') private readonly usersService: UsersServiceItf) {}
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  async profileUser(@Request() request): Promise<Users> {
+    try {
+      const profileUser = await this.usersService.getProfile(request.user.id);
+      return profileUser;
+    } catch (error) {
+      if(error instanceof CustomExceptionGen) throw error;
+      throw new InternalServerErrorException()
+    }
   }
 }

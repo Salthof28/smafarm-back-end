@@ -6,7 +6,7 @@ import { UpdateRefreshTokenSessionDto } from "./dto/req/update-refresh-token-ses
 
 export interface UsersRepositoryItf {
     findEmail(email: string): Promise<Users | undefined>;
-    findById(id: number): Promise<(Users & { sessions: SessionLogin[] }) | undefined>;
+    findById(id: number): Promise<Users | undefined>;
     findExistingUser(condition: Condition[]): Promise<Users | undefined>;
     created(body: CreateUserDto): Promise<Users>;
     loginSession(session: SessionDetailDto): Promise<SessionLogin>;
