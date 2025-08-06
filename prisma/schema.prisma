@@ -49,6 +49,18 @@ model Users {
   updated_at    DateTime?         @default(now()) @db.Timestamptz(6)
   farms         Farms?            @relation("UserFarm")
   transaction   Transaction[]
+  sessions      SessionLogin[]
+}
+
+model SessionLogin {
+  id            String                @id @default(uuid())
+  user_id       Int
+  refreshToken  String
+  userAgent     String?               @default("unknown")
+  ipAddress     String?               @default("unknown")
+  created_at    DateTime?             @default(now())   
+  expires_at    DateTime                 
+  user          Users                 @relation(fields: [user_id], references: [id])
 }
 
 model Category {
