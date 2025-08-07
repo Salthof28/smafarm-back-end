@@ -1,7 +1,7 @@
 // because function callback, we use promisify to be able use in async await function. scrypt change password to string
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "prisma/prisma.service";
-import { UsersRepositoryItf } from "./users.repository.interface";
+import { UpdatedUser, UsersRepositoryItf } from "./users.repository.interface";
 import { Prisma, SessionLogin, Users } from "@prisma/client";
 import { Condition } from "src/global/entities/condition-entity";
 import { CreateUserDto } from "./dto/req/create-user.dto";
@@ -71,6 +71,39 @@ export class UsersRepository implements UsersRepositoryItf {
                 }
             });
             return user
+        } catch (error) {
+            handlePrismaError(error);
+        }
+    }
+
+    async updatedProfile(user: UpdatedUser): Promise<Users> {
+        try {
+            const updateUser: Users = await this.prisma.users.update({
+                where: { id: user.id },
+                data: {
+                    name: user.body.name,
+                    email: user.body.email,
+                    img_profile: user.body.img_profile,
+                    phone: user.body.phone,
+                    password: user.body.password,
+                }
+            });
+            return updateUser;
+        } catch (error) {
+            handlePrismaError(error);
+        }
+    }
+
+    async updatedUserByAdmin(user: UpdatedUser): Promise<Users> {
+        try {
+            const updateUser: Users = await this.prisma.users.update({
+                where: { id: user.id },
+                data: {
+                    status: user.body.status,
+                    role: user.body.role
+                }
+            });
+            return updateUser;
         } catch (error) {
             handlePrismaError(error);
         }
