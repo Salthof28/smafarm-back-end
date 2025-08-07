@@ -4,9 +4,9 @@ import { CreateUserDto } from '../users/dto/req/create-user.dto';
 import { SessionLogin, Users } from '@prisma/client';
 import { CustomExceptionGen } from '../global/exception/exception.general';
 import { LoginUserDto } from './dto/login.dto';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../global/guards/jwt-auth.guard';
 import { Request as ExpressRequest } from 'express';
-import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
+import { JwtRefreshGuard } from '../global/guards/jwt-refresh.guard';
 import { TokenException } from './exception/token-exception';
 
 @Controller('auth')

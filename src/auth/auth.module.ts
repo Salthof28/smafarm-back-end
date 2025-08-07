@@ -5,8 +5,10 @@ import { PrismaModule } from 'prisma/prisma.module';
 import { UsersModule } from '../users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtStrategy } from './strategies/jwt.strategy';
-import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
+import { JwtStrategy } from 'src/global/strategies/jwt.strategy';
+import { JwtRefreshStrategy } from 'src/global/strategies/jwt-refresh.strategy';
+// import { JwtStrategy } from './strategies/jwt.strategy';
+// import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 
 @Module({
   imports: [
