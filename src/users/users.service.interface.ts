@@ -5,6 +5,7 @@ import { Condition } from "src/global/entities/condition-entity";
 
 
 export interface UsersServiceItf {
+    getAllUsers(query?: Condition): Promise<Users[]>;
     getProfile(id: number): Promise<Users>;
     updateProfile(user: UpdatedUser): Promise<Users>;
     exceptionUpdate(condition: Condition[], user: UpdateUserDto);

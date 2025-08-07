@@ -15,6 +15,12 @@ import { UpdateUserDto } from './dto/req/update-user.dto';
 export class UsersService implements UsersServiceItf {
   constructor(@Inject('UsersRepositoryItf') private usersRepository: UsersRepositoryItf) {}
 
+  async getAllUsers(query?: Condition): Promise<Users[]> {
+    const allUsers: Users[] | undefined = await this.usersRepository.getAllUser(query);
+    if(!allUsers) throw new UserNotFoundException();
+    return allUsers;
+  }
+  
   async getProfile(id: number): Promise<Users> {
     const userProfile: Users | undefined = await this.usersRepository.findById(id);
     if(!userProfile) throw new UserNotFoundException();

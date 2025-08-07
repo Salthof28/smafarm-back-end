@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, UseGuards, Request, InternalServerErrorException, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, UseGuards, Request, InternalServerErrorException, ParseIntPipe, Query } from '@nestjs/common';
 import { UsersServiceItf } from './users.service.interface';
 import { JwtAuthGuard } from 'src/global/guards/jwt-auth.guard';
 import { Users } from '@prisma/client';
@@ -13,7 +13,22 @@ import { RolesGuard } from 'src/global/guards/roles.guard';
 export class UsersController {
   constructor(@Inject('UsersServiceItf') private readonly usersService: UsersServiceItf) {}
 
-  // async getAllAccounts(@Query('account_name') account_name?: string, @Query('account_number') account_number?: string, @Query('branch_code') branch_code?: string) {}
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  @Get()
+  async getAllUsers(@Query('name') name?: string, @Query('email') email?: string, @Query('phone') phone?: string): Promise<Users[]> {
+    try {
+      const allUsers: Users[] = await this.usersService.getAllUsers({
+        name,
+        email,
+        phone
+      });
+      return allUsers;
+    } catch (error) {
+      if(error instanceof CustomExceptionGen) throw error;
+      throw new InternalServerErrorException()
+    }
+  }
 
   @Get('profile')
   async profileUser(@Request() request): Promise<Users> {
@@ -83,5 +98,4 @@ export class UsersController {
     }
   }
 
-  
 }

@@ -6,6 +6,7 @@ import { UpdateRefreshTokenSessionDto } from "./dto/req/update-refresh-token-ses
 import { UpdateUserDto } from "./dto/req/update-user.dto";
 
 export interface UsersRepositoryItf {
+    getAllUser(query?: Condition): Promise<Users[] | undefined>;
     findEmail(email: string): Promise<Users | undefined>;
     findById(id: number): Promise<Users | undefined>;
     findExistingUser(condition: Condition[]): Promise<Users | undefined>;

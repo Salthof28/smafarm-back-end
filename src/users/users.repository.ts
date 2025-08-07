@@ -2,7 +2,7 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "prisma/prisma.service";
 import { UpdatedUser, UsersRepositoryItf } from "./users.repository.interface";
-import { Prisma, SessionLogin, Users } from "@prisma/client";
+import { SessionLogin, Users } from "@prisma/client";
 import { Condition } from "src/global/entities/condition-entity";
 import { CreateUserDto } from "./dto/req/create-user.dto";
 import { DatabaseException } from "src/global/exception/database-exception";
@@ -15,6 +15,19 @@ import { UpdateRefreshTokenSessionDto } from "./dto/req/update-refresh-token-ses
 export class UsersRepository implements UsersRepositoryItf {
 
     constructor(private prisma: PrismaService){}
+
+    async getAllUser(query?: Condition): Promise<Users[] | undefined> {
+        const where: Condition = {};
+        if(query?.name || query?.email || query?.phone) {
+            where.OR = [];
+            if(query.name) where.OR.push({name: query.name});
+            if(query.email) where.OR.push({email: query.email});
+            if(query.phone) where.OR.push({phone: query.phone});
+        };
+        const allUsers: Users[] = await this.prisma.users.findMany({ where });
+        if(allUsers.length < 1) return undefined;
+        return allUsers;
+    }
 
     async findEmail(email: string): Promise<Users | undefined> {
         try {
