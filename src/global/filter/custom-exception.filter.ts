@@ -7,6 +7,7 @@ import { PhoneRegisteredException } from "src/auth/exception/phone-registered-ex
 import { InvalidLoginException } from "src/auth/exception/invalid-login-exception";
 import { TokenException } from "src/auth/exception/token-exception";
 import { UserNotFoundException } from "src/users/exception/user-not-found-exception";
+import { PasswordUserException } from "src/users/exception/password-user-exception";
 
 
 @Catch(CustomExceptionGen)
@@ -64,6 +65,13 @@ export class ExceptionFilterGen implements ExceptionFilter {
                 message: exception.message,
                 error: exception.name,
                 statusCode: HttpStatus.NOT_FOUND,
+            }
+        }
+        else if(exception instanceof PasswordUserException) {
+            responseBody = {
+                message: exception.message,
+                error: exception.name,
+                statusCode: HttpStatus.BAD_REQUEST,
             }
         }
 
