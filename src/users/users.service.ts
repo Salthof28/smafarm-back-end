@@ -69,4 +69,9 @@ export class UsersService implements UsersServiceItf {
     return updateUser;
   }
 
+  async deletUserByAdmin(id: number): Promise<Users> {
+    const deleteUser: Users = await this.usersRepository.deleteUser(id);
+    return deleteUser;
+  }
+
 }

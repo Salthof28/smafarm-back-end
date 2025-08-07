@@ -12,6 +12,7 @@ export interface UsersRepositoryItf {
     created(body: CreateUserDto): Promise<Users>;
     updatedProfile(user: UpdatedUser): Promise<Users>;
     updatedUserByAdmin(user: UpdatedUser): Promise<Users>;
+    deleteUser(id: number): Promise<Users>;
 
     loginSession(session: SessionDetailDto): Promise<SessionLogin>;
     findSessionbyIdToken(id_token: string): Promise<SessionLogin | undefined>;

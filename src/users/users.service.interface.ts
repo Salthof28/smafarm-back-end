@@ -10,6 +10,7 @@ export interface UsersServiceItf {
     exceptionUpdate(condition: Condition[], user: UpdateUserDto);
     findUserByAdmin(id: number): Promise<Users>;
     updateUserByAdmin(user: UpdatedUserByAdmin): Promise<Users>;
+    deletUserByAdmin(id: number): Promise<Users>;
 }
 
 export interface UpdatedUser {

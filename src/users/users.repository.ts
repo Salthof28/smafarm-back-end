@@ -94,6 +94,17 @@ export class UsersRepository implements UsersRepositoryItf {
         }
     }
 
+    async deleteUser(id: number): Promise<Users> {
+        try {
+            const deleteUser: Users = await this.prisma.users.delete({
+                where: { id }
+            });
+            return deleteUser;
+        } catch (error) {
+            handlePrismaError(error);
+        }
+    }
+
     async updatedUserByAdmin(user: UpdatedUser): Promise<Users> {
         try {
             const updateUser: Users = await this.prisma.users.update({

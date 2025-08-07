@@ -70,5 +70,18 @@ export class UsersController {
     }
   }
 
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  @Delete(':id')
+  async deletedUserByAdmin(@Param('id', ParseIntPipe) id: number): Promise<Users> {
+    try {
+      const deleteUser: Users = await this.usersService.deletUserByAdmin(id);
+      return deleteUser;
+    } catch (error) {
+      if(error instanceof CustomExceptionGen) throw error;
+      throw new InternalServerErrorException()
+    }
+  }
+
   
 }
