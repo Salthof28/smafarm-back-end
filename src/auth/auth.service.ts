@@ -79,15 +79,15 @@ export class AuthService implements AuthServiceItf {
       throw new TokenException('refresh token not found because expired')
     }
     // create new access token
-    const oldPayload = await this.jwtService.verifyAsync(oldAccessToken, {
-      secret: process.env.JWT_SECRET
-    });
+    const oldPayload = await this.jwtService.decode(oldAccessToken);
+    
     const newidToken = randomUUID();
     const newAccessPayload = { sub: oldPayload.sub, id_token: newidToken, name: oldPayload.name, role: oldPayload.role, expires_at: new Date(Date.now() + 60 * 60 * 1000) }
     const newAccessToken = await this.jwtService.signAsync(newAccessPayload, {
       secret: process.env.JWT_SECRET,
       expiresIn: '1h'
     });
+    
     // create new refresh token
 
     const newRefreshPayload = { sub: oldPayload.id, id_token: newidToken, tokenAccess: newAccessToken };
