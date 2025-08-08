@@ -88,20 +88,20 @@ model Farms {
 }
 
 model Livestock {
-  id            Int                       @id @default(autoincrement())
-  category_id   Int
-  farm_id       Int
-  title         String                    @db.VarChar(100)
-  age           Int
-  price         Decimal                   @default(0.00) @db.Decimal(15,2)
-  stock         Int
-  description   String                    @db.Text()
-  img_animal    String[]     
-  created_at    DateTime?                 @default(now()) @db.Timestamptz(6)
-  updated_at    DateTime?                 @default(now()) @db.Timestamptz(6)
-  category      Category                  @relation(fields: [category_id], references: [id])
-  detail_buy    DetailBuyTransaction[]
-  detail_care   DetailCareTransaction[]
+  id                  Int                       @id @default(autoincrement())
+  category_id         Int
+  farm_id             Int
+  title               String                    @db.VarChar(100)
+  age                 Int
+  price               Decimal                   @default(0.00) @db.Decimal(15,2)
+  stock               Int
+  description         String                    @db.Text()
+  img_animal          String[]     
+  created_at          DateTime?                 @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime?                 @default(now()) @db.Timestamptz(6)
+  category            Category                  @relation(fields: [category_id], references: [id])
+  detail_buy          DetailBuyTransaction[]
+  care_transaction    CareTransaction[]
 }
 
 model Shelter {
@@ -121,12 +121,13 @@ model Shelter {
 }
 
 model CareGive {
-  id                    Int                   @id @default(autoincrement())
+  id                    Int                       @id @default(autoincrement())
   shelter_id            Int
-  name                  String                @db.VarChar(100)
-  price                 Decimal               @db.Decimal(15,2)
+  name                  String                    @db.VarChar(100)
+  price                 Decimal                   @db.Decimal(15,2)
   unit                  UnitCare
-  shelter               Shelter               @relation(fields: [shelter_id], references: [id])
+  shelter               Shelter                   @relation(fields: [shelter_id], references: [id])
+  transaction           DetailCareTransaction[]
 }
 model Transaction {
   id                    Int                       @id @default(autoincrement())
@@ -142,7 +143,7 @@ model Transaction {
   user                  Users                     @relation(fields: [customer_id], references: [id])
   farm                  Farms                     @relation(fields: [farm_id], references: [id])
   detail_buy            DetailBuyTransaction[]
-  detail_care           DetailCareTransaction[]
+  care_transaction      CareTransaction[]
 }
 
 model DetailBuyTransaction {
@@ -156,16 +157,25 @@ model DetailBuyTransaction {
   livestock             Livestock             @relation(fields: [livestock_id], references: [id])
 }
 
-model DetailCareTransaction {
-  id                    Int                   @id @default(autoincrement())
+model CareTransaction {
+  id                    Int                         @id @default(autoincrement())
   transaction_id        Int                   
   livestock_id          Int
   shelter_id            Int
   duration_care         Int
-  start_date            DateTime              @db.Timestamptz(6)
-  finish_date           DateTime              @db.Timestamptz(6)
-  one_day_price         Decimal               @default(0.00) @db.Decimal(15,2)
-  sub_total             Decimal               @default(0.00) @db.Decimal(15,2)
-  transaction           Transaction           @relation(fields: [transaction_id], references: [id])
-  livestock             Livestock             @relation(fields: [livestock_id], references: [id])
+  start_date            DateTime                    @db.Timestamptz(6)
+  finish_date           DateTime                    @db.Timestamptz(6)
+  one_day_price         Decimal                     @default(0.00) @db.Decimal(15,2)
+  sub_total             Decimal                     @default(0.00) @db.Decimal(15,2)
+  transaction           Transaction                 @relation(fields: [transaction_id], references: [id])
+  livestock             Livestock                   @relation(fields: [livestock_id], references: [id])
+  detail_care           DetailCareTransaction[]
+}
+
+model DetailCareTransaction {
+  id                    Int                   @id @default(autoincrement())
+  careTransaction_id    Int
+  careGive_id           Int
+  careTransaction       CareTransaction       @relation(fields: [careTransaction_id], references: [id])
+  careGive              CareGive              @relation(fields: [careGive_id], references: [id])
 }
