@@ -98,6 +98,7 @@ export class UsersRepository implements UsersRepositoryItf {
                     img_profile: user.body.img_profile,
                     phone: user.body.phone,
                     password: user.body.password,
+                    updated_at: new Date()
                 }
             });
             return updateUser;
@@ -123,7 +124,8 @@ export class UsersRepository implements UsersRepositoryItf {
                 where: { id: user.id },
                 data: {
                     status: user.body.status,
-                    role: user.body.role
+                    role: user.body.role,
+                    updated_at: new Date()
                 }
             });
             return updateUser;
