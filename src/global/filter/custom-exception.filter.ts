@@ -12,6 +12,7 @@ import { FileNotFoundException } from "../../uploads/exceptions/file-not-found-e
 import { BucketNameException } from "../../uploads/exceptions/bucket-name-exception";
 import { UploadException } from "../../uploads/exceptions/upload-exception";
 import { CategoryNotFoundException } from "../../category/exceptions/category-not-found-exception";
+import { FarmNotFoundException } from "../../farms/exception/farm-not-found-exception";
 
 
 @Catch(CustomExceptionGen)
@@ -99,8 +100,14 @@ export class ExceptionFilterGen implements ExceptionFilter {
                 statusCode: HttpStatus.BAD_REQUEST,
             }
         }
-
         else if(exception instanceof CategoryNotFoundException) {
+            responseBody = {
+                message: exception.message,
+                error: exception.name,
+                statusCode: HttpStatus.BAD_REQUEST,
+            }
+        }
+        else if(exception instanceof FarmNotFoundException) {
             responseBody = {
                 message: exception.message,
                 error: exception.name,
