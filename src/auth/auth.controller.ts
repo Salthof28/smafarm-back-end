@@ -1,19 +1,24 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, InternalServerErrorException, Request, Req, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Inject, InternalServerErrorException, Request, Req, UseGuards, HttpCode, HttpStatus, Delete } from '@nestjs/common';
 import { AuthServiceItf } from './auth.service.interface';
 import { CreateUserDto } from '../users/dto/req/create-user.dto';
 import { SessionLogin, Users } from '@prisma/client';
 import { CustomExceptionGen } from '../global/exception/exception.general';
-import { LoginUserDto } from './dto/login.dto';
+import { LoginUserDto } from './dto/req/login.dto';
 import { JwtAuthGuard } from '../global/guards/jwt-auth.guard';
 import { Request as ExpressRequest } from 'express';
 import { JwtRefreshGuard } from '../global/guards/jwt-refresh.guard';
 import { TokenException } from './exception/token-exception';
+import { TransformRes } from '../global/interceptors/transform-body-res.interceptor';
+import { UserBodyDto } from '../users/dto/res/user-body.dto';
+import { TokenBodyDto } from './dto/res/token-body.dto';
+import { SessionBodyDto } from './dto/res/session-body.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(@Inject('AuthServiceItf') private readonly authService: AuthServiceItf) {}
 
   @Post('register')
+  @TransformRes(UserBodyDto)
   async registerUser(@Body() body: CreateUserDto): Promise<Users> {
     try {
       const newUser= await this.authService.register(body);
@@ -24,8 +29,9 @@ export class AuthController {
     }
   }
 
-
+  @HttpCode(HttpStatus.OK)
   @Post('login')
+  @TransformRes(TokenBodyDto)
   async loginUser(@Body() body: LoginUserDto, @Req() req: ExpressRequest): Promise<{ access_token: string, refresh_token: string }> {
     try {
       const userAgent = req.headers['user-agent'] || 'unknown';
@@ -43,6 +49,7 @@ export class AuthController {
 
   @UseGuards(JwtRefreshGuard)
   @Post('refreshToken')
+  @TransformRes(TokenBodyDto)
   async refreshToken(@Request() request, @Req() req: ExpressRequest): Promise<{ access_token: string, refresh_token: string }> {
     try {
       const authHeader = req.headers['authorization'];
@@ -61,7 +68,8 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('logout')
+  @Delete('logout')
+  @TransformRes(SessionBodyDto)
   async logout(@Request() request): Promise<SessionLogin> {
     try {
       const logoutUser = await this.authService.logout(request.user.id_token);
@@ -71,11 +79,4 @@ export class AuthController {
       throw new InternalServerErrorException()
     }
   }
-
-  // @UseGuards(JwtAuthGuard)
-  // @Get()
-  // coba(@Request() request){
-  //   console.log(request.user)
-  //   return request.user
-  // }
 }

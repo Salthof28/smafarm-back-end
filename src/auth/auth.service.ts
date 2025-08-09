@@ -7,7 +7,7 @@ import { SessionLogin, Users } from '@prisma/client';
 import * as bcrypt from 'bcrypt'
 import { EmailRegisteredException } from './exception/email-registered-exception';
 import { PhoneRegisteredException } from './exception/phone-registered-exception';
-import { LoginUserDto } from './dto/login.dto';
+import { LoginUserDto } from './dto/req/login.dto';
 import { InvalidLoginException } from './exception/invalid-login-exception';
 import { JwtService } from '@nestjs/jwt';
 import { TokenException } from './exception/token-exception';
@@ -89,7 +89,6 @@ export class AuthService implements AuthServiceItf {
     });
     
     // create new refresh token
-
     const newRefreshPayload = { sub: oldPayload.id, id_token: newidToken, tokenAccess: newAccessToken };
     const newRefreshToken = await this.jwtService.signAsync(newRefreshPayload, {
       secret: process.env.JWT_REFRESH_SECRET,

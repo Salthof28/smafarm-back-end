@@ -7,9 +7,12 @@ import { Role } from 'src/global/enum/role.enum';
 import { Roles } from 'src/global/decorator/roles.decorator';
 import { UpdateUserDto } from './dto/req/update-user.dto';
 import { RolesGuard } from 'src/global/guards/roles.guard';
+import { TransformRes } from 'src/global/interceptors/transform-body-res.interceptor';
+import { UserBodyDto } from './dto/res/user-body.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('users')
+@TransformRes(UserBodyDto)
 export class UsersController {
   constructor(@Inject('UsersServiceItf') private readonly usersService: UsersServiceItf) {}
 

@@ -3,7 +3,7 @@
 export interface UploadsServiceItf {
     uploadImgProfile(upload: ImageUpload): Promise<{ url: string }>;
     uploadImgShelter(upload: ImageUpload): Promise<{ url: string }>;
-    deleteImgShelter(url: string): Promise<{ message: string }>
+    deleteImgShelter(url: string): Promise<{ message: string, url: string }>;
 }
 
 export interface ImageUpload {

@@ -64,8 +64,7 @@ export class UploadsService implements UploadsServiceItf {
     return { url: publicUrl };
   }
 
-  async deleteImgShelter(url: string): Promise<{ message: string; }> {
-    console.log(url)
+  async deleteImgShelter(url: string): Promise<{ message: string, url: string }> {
     const bucketName = "smafarm"
     // get pathname url, example -> "/storage/v1/object/public/smafarm/shelters/123/abc.jpg"
     const parseUrl = new URL(url);
@@ -80,7 +79,7 @@ export class UploadsService implements UploadsServiceItf {
     // combine raw path with slice for path
     const filePath = rawPath.join('/');
     await this.supabase.storage.from(process.env.SUPABASE_BUCKET).remove([filePath]);
-    return { message: 'success deleted' }
+    return { message: 'success deleted', url }
   }
 
 }
