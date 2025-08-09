@@ -1,6 +1,6 @@
 import { Users } from "@prisma/client";
 import { UpdateUserDto } from "./dto/req/update-user.dto";
-import { Condition } from "src/global/entities/condition-entity";
+import { Condition } from "../global/entities/condition-entity";
 
 
 

@@ -11,7 +11,6 @@ import { LoginUserDto } from './dto/req/login.dto';
 import { InvalidLoginException } from './exception/invalid-login-exception';
 import { JwtService } from '@nestjs/jwt';
 import { TokenException } from './exception/token-exception';
-import { UserNotFoundException } from 'src/users/exception/user-not-found-exception';
 import { randomUUID } from 'crypto';
 
 @Injectable()

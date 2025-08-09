@@ -3,10 +3,9 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "prisma/prisma.service";
 import { UpdatedUser, UsersRepositoryItf } from "./users.repository.interface";
 import { SessionLogin, Users } from "@prisma/client";
-import { Condition } from "src/global/entities/condition-entity";
+import { Condition } from "../global/entities/condition-entity";
 import { CreateUserDto } from "./dto/req/create-user.dto";
-import { DatabaseException } from "src/global/exception/database-exception";
-import { handlePrismaError } from "src/global/utils/prisma.error.util";
+import { handlePrismaError } from "../global/utils/prisma.error.util";
 import { SessionDetailDto } from "./dto/req/create-session-login.dto";
 import { UpdateRefreshTokenSessionDto } from "./dto/req/update-refresh-token-session.dto";
 

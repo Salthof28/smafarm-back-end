@@ -1,7 +1,6 @@
 import { SessionLogin, Users } from "@prisma/client";
-import { CreateUserDto } from "src/users/dto/req/create-user.dto";
+import { CreateUserDto } from "../users/dto/req/create-user.dto";
 import { LoginUserDto } from "./dto/req/login.dto";
-import { SessionDetailDto } from "src/users/dto/req/create-session-login.dto";
 
 
 export interface AuthServiceItf {

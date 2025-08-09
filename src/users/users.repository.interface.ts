@@ -1,6 +1,6 @@
 import { SessionLogin, Users } from "@prisma/client";
 import { CreateUserDto } from "./dto/req/create-user.dto";
-import { Condition } from "src/global/entities/condition-entity";
+import { Condition } from "../global/entities/condition-entity";
 import { SessionDetailDto } from "./dto/req/create-session-login.dto";
 import { UpdateRefreshTokenSessionDto } from "./dto/req/update-refresh-token-session.dto";
 import { UpdateUserDto } from "./dto/req/update-user.dto";

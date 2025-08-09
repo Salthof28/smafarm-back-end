@@ -2,15 +2,15 @@ import { ArgumentsHost, Catch, ExceptionFilter, HttpStatus } from "@nestjs/commo
 import { CustomExceptionGen } from "../exception/exception.general";
 import { HttpAdapterHost } from "@nestjs/core";
 import { DatabaseException } from "../exception/database-exception";
-import { EmailRegisteredException } from "src/auth/exception/email-registered-exception";
-import { PhoneRegisteredException } from "src/auth/exception/phone-registered-exception";
-import { InvalidLoginException } from "src/auth/exception/invalid-login-exception";
-import { TokenException } from "src/auth/exception/token-exception";
-import { UserNotFoundException } from "src/users/exception/user-not-found-exception";
-import { PasswordUserException } from "src/users/exception/password-user-exception";
-import { FileNotFoundException } from "src/uploads/exceptions/file-not-found-exception";
-import { BucketNameException } from "src/uploads/exceptions/bucket-name-exception";
-import { UploadException } from "src/uploads/exceptions/upload-exception";
+import { EmailRegisteredException } from "../../auth/exception/email-registered-exception";
+import { PhoneRegisteredException } from "../../auth/exception/phone-registered-exception";
+import { InvalidLoginException } from "../../auth/exception/invalid-login-exception";
+import { TokenException } from "../../auth/exception/token-exception";
+import { UserNotFoundException } from "../../users/exception/user-not-found-exception";
+import { PasswordUserException } from "../../users/exception/password-user-exception";
+import { FileNotFoundException } from "../../uploads/exceptions/file-not-found-exception";
+import { BucketNameException } from "../../uploads/exceptions/bucket-name-exception";
+import { UploadException } from "../../uploads/exceptions/upload-exception";
 
 
 @Catch(CustomExceptionGen)

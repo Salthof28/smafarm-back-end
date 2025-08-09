@@ -1,13 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, UseGuards, Request, InternalServerErrorException, ParseIntPipe, Query } from '@nestjs/common';
+import { Controller, Get, Body, Patch, Param, Delete, Inject, UseGuards, Request, InternalServerErrorException, ParseIntPipe, Query } from '@nestjs/common';
 import { UsersServiceItf } from './users.service.interface';
-import { JwtAuthGuard } from 'src/global/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../global/guards/jwt-auth.guard';
 import { Users } from '@prisma/client';
-import { CustomExceptionGen } from 'src/global/exception/exception.general';
-import { Role } from 'src/global/enum/role.enum';
-import { Roles } from 'src/global/decorator/roles.decorator';
+import { CustomExceptionGen } from '../global/exception/exception.general';
+import { Role } from '../global/enum/role.enum';
+import { Roles } from '../global/decorator/roles.decorator';
 import { UpdateUserDto } from './dto/req/update-user.dto';
-import { RolesGuard } from 'src/global/guards/roles.guard';
-import { TransformRes } from 'src/global/interceptors/transform-body-res.interceptor';
+import { RolesGuard } from '../global/guards/roles.guard';
+import { TransformRes } from '../global/interceptors/transform-body-res.interceptor';
 import { UserBodyDto } from './dto/res/user-body.dto';
 
 @UseGuards(JwtAuthGuard)

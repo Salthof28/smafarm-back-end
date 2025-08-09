@@ -5,5 +5,4 @@ import { CategoryServiceItf } from './category.service.interface';
 export class CategoryController {
   constructor(@Inject('CategoryServiceItf') categoryService: CategoryServiceItf) {}
 
-
 }

@@ -3,12 +3,11 @@ import { UsersRepositoryItf } from './users.repository.interface';
 import { UpdatedUser, UpdatedUserByAdmin, UsersServiceItf } from './users.service.interface';
 import { Users } from '@prisma/client';
 import { UserNotFoundException } from './exception/user-not-found-exception';
-import { Condition } from 'src/global/entities/condition-entity';
-import { EmailRegisteredException } from 'src/auth/exception/email-registered-exception';
-import { PhoneRegisteredException } from 'src/auth/exception/phone-registered-exception';
+import { Condition } from '../global/entities/condition-entity';
+import { EmailRegisteredException } from '../auth/exception/email-registered-exception';
+import { PhoneRegisteredException } from '../auth/exception/phone-registered-exception';
 import * as bcrypt from 'bcrypt';
 import { PasswordUserException } from './exception/password-user-exception';
-import { UpdatedUserProfileDto } from './dto/req/update-user-profile.dto';
 import { UpdateUserDto } from './dto/req/update-user.dto';
 
 @Injectable()

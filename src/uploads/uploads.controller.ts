@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, Request, UploadedFile, InternalServerErrorException, UseGuards, UseInterceptors, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, Delete, Inject, Request, UploadedFile, InternalServerErrorException, UseGuards, UseInterceptors, HttpCode, HttpStatus } from '@nestjs/common';
 import { UploadsServiceItf } from './uploads.service.interface';
 import { CustomExceptionGen } from '../global/exception/exception.general';
 import { JwtAuthGuard } from '../global/guards/jwt-auth.guard';
