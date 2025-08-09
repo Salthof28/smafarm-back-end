@@ -11,6 +11,7 @@ import { PasswordUserException } from "../../users/exception/password-user-excep
 import { FileNotFoundException } from "../../uploads/exceptions/file-not-found-exception";
 import { BucketNameException } from "../../uploads/exceptions/bucket-name-exception";
 import { UploadException } from "../../uploads/exceptions/upload-exception";
+import { CategoryNotFoundException } from "../../category/exceptions/category-not-found-exception";
 
 
 @Catch(CustomExceptionGen)
@@ -92,6 +93,14 @@ export class ExceptionFilterGen implements ExceptionFilter {
             }
         }
         else if(exception instanceof UploadException) {
+            responseBody = {
+                message: exception.message,
+                error: exception.name,
+                statusCode: HttpStatus.BAD_REQUEST,
+            }
+        }
+
+        else if(exception instanceof CategoryNotFoundException) {
             responseBody = {
                 message: exception.message,
                 error: exception.name,
