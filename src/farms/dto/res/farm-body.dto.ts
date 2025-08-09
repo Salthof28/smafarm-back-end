@@ -1,6 +1,6 @@
 import { Expose, Type } from "class-transformer";
 
-export class CategoryBodyDto {
+export class FarmBodyDto {
     @Expose()
     @Type(() => Number)
     id: number

@@ -1,12 +1,11 @@
-import { IsNumber, IsString } from "class-validator";
+import { IsNumber, IsOptional, IsString } from "class-validator";
 
 export class CreateFarmDto {
-    @IsNumber()
-    user_id: number;
     @IsString()
     name: string;
     @IsString()
     location: string;
+    @IsOptional()
     @IsString()
-    img_farm: string;
+    img_farm?: string;
 }

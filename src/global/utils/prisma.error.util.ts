@@ -5,7 +5,7 @@ import { DatabaseException } from "../exception/database-exception";
 export function handlePrismaError(error): never {
     // Error unique constraint, foreign key (example P1001: prisma not connect to database)
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if(error.code === 'P2025') throw new DatabaseException('you want delete not find')
+        if(error.code === 'P2025') throw new DatabaseException('data in database not found')
         throw new DatabaseException(`Database error: ${error.code} - ${error.message}`);
     }
     // problem connection DB (PgBouncer juga bisa muncul di sini)
