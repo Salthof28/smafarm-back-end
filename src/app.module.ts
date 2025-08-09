@@ -5,6 +5,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { UploadsModule } from './uploads/uploads.module';
+import { CategoryModule } from './category/category.module';
 
 @Module({
   imports: [
@@ -14,7 +15,8 @@ import { UploadsModule } from './uploads/uploads.module';
       isGlobal: true,
       envFilePath: '.env'
     }),
-    UploadsModule
+    UploadsModule,
+    CategoryModule
   ],
   controllers: [AppController],
   providers: [AppService],
