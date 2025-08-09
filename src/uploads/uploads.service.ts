@@ -2,6 +2,9 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { createClient } from '@supabase/supabase-js';
 import { ImageUpload, UploadsServiceItf } from './uploads.service.interface';
 import * as path from 'path';
+import { FileNotFoundException } from './exceptions/file-not-found-exception';
+import { UploadException } from './exceptions/upload-exception';
+import { BucketNameException } from './exceptions/bucket-name-exception';
 
 @Injectable()
 export class UploadsService implements UploadsServiceItf {
@@ -15,7 +18,7 @@ export class UploadsService implements UploadsServiceItf {
   }
 
   async uploadImgProfile(upload: ImageUpload): Promise<{ url: string }> {
-    if(!upload.file) throw new BadRequestException('you not send file for stored');
+    if(!upload.file) throw new FileNotFoundException();
     // name file and path
     const fileName = 'profile.jpg';
     const filePath = `users/${upload.userId}/${fileName}`;
@@ -27,7 +30,7 @@ export class UploadsService implements UploadsServiceItf {
         upsert: true
       });
     
-    if(uploadError) throw new BadRequestException(uploadError.message);
+    if(uploadError) throw new UploadException(uploadError.message);
 
     const { data: publicUrlData } = this.supabase.storage
       .from(process.env.SUPABASE_BUCKET)
@@ -38,7 +41,7 @@ export class UploadsService implements UploadsServiceItf {
   }
 
   async uploadImgShelter(upload: ImageUpload): Promise<{ url: string; }> {
-    if(!upload.file) throw new BadRequestException('you not send file for stored');
+    if(!upload.file) throw new FileNotFoundException();
     // name file and path
     const originalName = upload.file.originalname;
     const fileName = `${Date.now()}-${path.parse(originalName).name}.jpg`;
@@ -51,7 +54,7 @@ export class UploadsService implements UploadsServiceItf {
         upsert: true
       });
     
-    if(uploadError) throw new BadRequestException(uploadError.message);
+    if(uploadError) throw new UploadException(uploadError.message);
 
     const { data: publicUrlData } = this.supabase.storage
       .from(process.env.SUPABASE_BUCKET)
@@ -71,7 +74,7 @@ export class UploadsService implements UploadsServiceItf {
     // search position index by bucketName
     const bucketIndex = partsUrl.indexOf(bucketName);
     // if not find bucket throw exception
-    if(bucketIndex === -1) throw new BadRequestException('not found bucket name');
+    if(bucketIndex === -1) throw new BucketNameException();
     // get all path after bucketName, example -> ["shelters", "123", "abc.jpg"]
     const rawPath = partsUrl.slice(bucketIndex + 1);
     // combine raw path with slice for path

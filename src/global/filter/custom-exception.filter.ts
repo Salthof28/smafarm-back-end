@@ -8,6 +8,9 @@ import { InvalidLoginException } from "src/auth/exception/invalid-login-exceptio
 import { TokenException } from "src/auth/exception/token-exception";
 import { UserNotFoundException } from "src/users/exception/user-not-found-exception";
 import { PasswordUserException } from "src/users/exception/password-user-exception";
+import { FileNotFoundException } from "src/uploads/exceptions/file-not-found-exception";
+import { BucketNameException } from "src/uploads/exceptions/bucket-name-exception";
+import { UploadException } from "src/uploads/exceptions/upload-exception";
 
 
 @Catch(CustomExceptionGen)
@@ -68,6 +71,27 @@ export class ExceptionFilterGen implements ExceptionFilter {
             }
         }
         else if(exception instanceof PasswordUserException) {
+            responseBody = {
+                message: exception.message,
+                error: exception.name,
+                statusCode: HttpStatus.BAD_REQUEST,
+            }
+        }
+        else if(exception instanceof FileNotFoundException) {
+            responseBody = {
+                message: exception.message,
+                error: exception.name,
+                statusCode: HttpStatus.NOT_FOUND,
+            }
+        }
+        else if(exception instanceof BucketNameException) {
+            responseBody = {
+                message: exception.message,
+                error: exception.name,
+                statusCode: HttpStatus.NOT_FOUND,
+            }
+        }
+        else if(exception instanceof UploadException) {
             responseBody = {
                 message: exception.message,
                 error: exception.name,
