@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UploadsModule } from './uploads/uploads.module';
 import { CategoryModule } from './category/category.module';
 import { FarmsModule } from './farms/farms.module';
+import { SheltersModule } from './shelters/shelters.module';
 
 @Module({
   imports: [
@@ -18,7 +19,8 @@ import { FarmsModule } from './farms/farms.module';
     }),
     UploadsModule,
     CategoryModule,
-    FarmsModule
+    FarmsModule,
+    SheltersModule
   ],
   controllers: [AppController],
   providers: [AppService],
