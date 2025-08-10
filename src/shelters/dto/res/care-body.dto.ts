@@ -1,6 +1,6 @@
 import { Expose, Type } from "class-transformer";
 
-export class ShelterBodyDto {
+export class CareBodyDto {
     @Expose()
     @Type(() => Number)
     shelter_id: number;

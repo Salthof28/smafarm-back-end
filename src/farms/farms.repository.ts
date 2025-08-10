@@ -38,6 +38,18 @@ export class FarmsRepository implements FarmsRepositoryItf {
         }
     };
 
+    async getFarmByUserId(user_id: number): Promise<Farms | undefined> {
+        try {
+            const farm: Farms | null = await this.prisma.farms.findUnique({
+                where: { user_id }
+            });
+            if(farm === null) return undefined;
+            return farm;
+        } catch (error) {
+            handlePrismaError(error);
+        }
+    }
+
     async created(farm: BuildingFarm): Promise<Farms> {
         try {
             const createFarm: Farms = await this.prisma.farms.create({

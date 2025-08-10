@@ -1,5 +1,5 @@
 import { CareGive, Shelter } from "@prisma/client";
-import { Condition } from "src/global/entities/condition-entity";
+import { Condition } from "../global/entities/condition-entity";
 import { CreateCareDto } from "./dto/req/create-care.dto";
 import { CreateShelterDto } from "./dto/req/create-shelter.dto";
 import { UpdateShelterDto } from "./dto/req/update-shelter.dto";
@@ -8,7 +8,9 @@ import { UpdateCareDto } from "./dto/req/update-care.dto";
 export interface SheltersRepositoryItf {
     getAllShelter(query?: Condition): Promise<Shelter[] | undefined>;
     getShelter(id: number): Promise<Shelter | undefined>;
+    getRelationShelter(id: number): Promise<{ farm: { user_id: number } } | undefined>;
     getAllCare(): Promise<CareGive[] | undefined>;
+    getRelationCare(id: number): Promise<{ shelter: { farm: { user_id: number } } } | undefined>;
     createdShelter(newShel: NewShelter): Promise<Shelter>;
     updatedShelter(upShel: UpdateShelter): Promise<Shelter>;
     deletedShelter(id: number): Promise<Shelter>;

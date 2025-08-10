@@ -24,10 +24,12 @@ export class SheltersRepository implements SheltersRepositoryItf {
                 lte: query.high_price,
             };
             // where or
-            where.OR = [];
-            if(query?.name) where.OR.push({ name: query.name });
-            if(query?.location) where.OR.push({ location: query.location });
-            if(query?.category) where.OR.push({ category: query.category });
+            if(query?.name || query?.location || query?.category){
+                where.OR = [];
+                if(query.name) where.OR.push({ name: query.name });
+                if(query.location) where.OR.push({ location: query.location });
+                if(query.category) where.OR.push({ category: query.category });
+            }
             
             const allShelter: Shelter[] = await this.prisma.shelter.findMany({ where });
             if(allShelter.length < 1) return undefined;
@@ -48,8 +50,25 @@ export class SheltersRepository implements SheltersRepositoryItf {
             handlePrismaError(error);
         }
     }
+
+    async getRelationShelter(id: number): Promise<{ farm: { user_id: number } } | undefined> {
+        try {
+            const shelter: { farm: { user_id: number } } | null = await this.prisma.shelter.findUnique({
+                where: { id },
+                select: {
+                    farm: {
+                        select: { user_id: true }
+                    }
+                }
+            });
+            if(shelter === null) return undefined;
+            return shelter;
+        } catch (error) {
+            handlePrismaError(error);
+        }
+    }
     
-    async getAllCare(query?: Condition): Promise<CareGive[] | undefined> {
+    async getAllCare(): Promise<CareGive[] | undefined> {
         try {
             const allCare: CareGive[] = await this.prisma.careGive.findMany();
             if(allCare.length < 1) return undefined;
@@ -58,6 +77,27 @@ export class SheltersRepository implements SheltersRepositoryItf {
             handlePrismaError(error);
         }
     };
+
+    async getRelationCare(id: number): Promise<{ shelter: { farm: { user_id: number } } } | undefined> {
+        try {
+            const care = await await this.prisma.careGive.findUnique({
+                where: { id },
+                select: {
+                    shelter: {
+                        select: {
+                            farm: {
+                                select: { user_id: true }
+                            }
+                        }
+                    }
+                }
+            });
+            if(care === null) return undefined;
+            return care;
+        } catch (error) {
+            handlePrismaError(error);
+        }
+    }
 
     async createdShelter(newShel: NewShelter): Promise<Shelter> {
         try {

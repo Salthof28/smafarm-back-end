@@ -9,5 +9,6 @@ import { FarmsRepository } from './farms.repository';
     { provide: 'FarmsServiceItf', useClass: FarmsService },
     { provide: 'FarmsRepositoryItf', useClass: FarmsRepository }
   ],
+  exports: ['FarmsRepositoryItf']
 })
 export class FarmsModule {}
