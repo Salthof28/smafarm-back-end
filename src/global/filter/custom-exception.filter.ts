@@ -13,8 +13,9 @@ import { BucketNameException } from "../../uploads/exceptions/bucket-name-except
 import { UploadException } from "../../uploads/exceptions/upload-exception";
 import { CategoryNotFoundException } from "../../category/exceptions/category-not-found-exception";
 import { FarmNotFoundException } from "../../farms/exception/farm-not-found-exception";
-import { ShelterNotFoundException } from "../../shelters/exception/shelter-not-found.dto";
-import { CareNotFoundException } from "../../shelters/exception/care-not-found.dto";
+import { ShelterNotFoundException } from "../../shelters/exception/shelter-not-found-exception";
+import { CareNotFoundException } from "../../shelters/exception/care-not-found-exception";
+import { ShelterAccessException } from "src/shelters/exception/shelter-access-exception";
 
 
 @Catch(CustomExceptionGen)
@@ -106,24 +107,31 @@ export class ExceptionFilterGen implements ExceptionFilter {
             responseBody = {
                 message: exception.message,
                 error: exception.name,
-                statusCode: HttpStatus.BAD_REQUEST,
+                statusCode: HttpStatus.NOT_FOUND,
             }
         }
         else if(exception instanceof FarmNotFoundException) {
             responseBody = {
                 message: exception.message,
                 error: exception.name,
-                statusCode: HttpStatus.BAD_REQUEST,
+                statusCode: HttpStatus.NOT_FOUND,
             }
         }
         else if(exception instanceof ShelterNotFoundException) {
             responseBody = {
                 message: exception.message,
                 error: exception.name,
-                statusCode: HttpStatus.BAD_REQUEST,
+                statusCode: HttpStatus.NOT_FOUND,
             }
         }
         else if(exception instanceof CareNotFoundException) {
+            responseBody = {
+                message: exception.message,
+                error: exception.name,
+                statusCode: HttpStatus.NOT_FOUND,
+            }
+        }
+        else if(exception instanceof ShelterAccessException) {
             responseBody = {
                 message: exception.message,
                 error: exception.name,
