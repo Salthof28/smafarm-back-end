@@ -7,13 +7,15 @@ import { UpdateCareDto } from "./dto/req/update-care.dto";
 
 export interface SheltersRepositoryItf {
     getAllShelter(query?: Condition): Promise<Shelter[] | undefined>;
-    getShelter(id: number): Promise<Shelter | undefined>;
+    getShelter(id: number): Promise<OutDetailShelter | undefined>;
     getRelationShelter(id: number): Promise<{ farm: { user_id: number } } | undefined>;
     getAllCare(): Promise<CareGive[] | undefined>;
     getRelationCare(id: number): Promise<{ shelter: { farm: { user_id: number } } } | undefined>;
     createdShelter(newShel: NewShelter): Promise<Shelter>;
     updatedShelter(upShel: UpdateShelter): Promise<Shelter>;
     deletedShelter(id: number): Promise<Shelter>;
+    createManyImg(allUrl: NewImageUrl): Promise<number>;
+    deleteManyImg(allUrl: string[]): Promise<number>;
     createdCare(body: CreateCareDto): Promise<CareGive>;
     updatedCare(upCare: UpdateCare): Promise<CareGive>;
     deletedCare(id: number): Promise<CareGive>;
@@ -31,3 +33,10 @@ export interface NewShelter {
     farm_id: number,
     body: CreateShelterDto
 }
+
+export interface NewImageUrl {
+    shelter_id: number,
+    body: string[]
+}
+
+export type OutDetailShelter = (Shelter & { img_shelter: { url: string }[], farm: { user_id: number }, care_give: CareGive[] })

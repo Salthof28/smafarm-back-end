@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DeleteCare, DeleteShelter, ServiceCreateCare, ServiceCreateShelter, ServiceUpdateCare, ServiceUpdateShelter, SheltersServiceItf } from './shelters.service.interface';
-import { SheltersRepositoryItf } from './shelters.repository.interface';
+import { OutDetailShelter, SheltersRepositoryItf } from './shelters.repository.interface';
 import { CareGive, Farms, Shelter } from '@prisma/client';
 import { Condition } from '../global/entities/condition-entity';
 import { ShelterNotFoundException } from './exception/shelter-not-found-exception';
@@ -39,14 +39,35 @@ export class SheltersService implements SheltersServiceItf {
       farm_id: findFarm.id,
       body: newShel.body
     });
+    // check input image or not
+    if(newShel.body.img_shelter) await this.sheltersRepository.createManyImg({
+        shelter_id: newShelter.id,
+        body: newShel.body.img_shelter
+      });
     return newShelter;
   };
 
   async updatedShelter(upShel: ServiceUpdateShelter): Promise<Shelter> {
     // check shelter has a user
-    const checkShelter: { farm: { user_id: number } } | undefined = await this.sheltersRepository.getRelationShelter(upShel.id);
-    if(!checkShelter) throw new ShelterNotFoundException();
-    if(checkShelter.farm.user_id !== upShel.user_id) throw new ShelterAccessException();
+    const findShelter: OutDetailShelter | undefined = await this.sheltersRepository.getShelter(upShel.id);
+    if(!findShelter) throw new ShelterNotFoundException();
+    if(findShelter.farm.user_id !== upShel.user_id) throw new ShelterAccessException();
+    // check the user input image shelter. If input create the image
+    if(upShel.body.img_shelter){
+      // old only (from database)
+      const oldImg: string[] = findShelter.img_shelter.map(img => img.url);
+      // all image (old & new from input request)
+      const imgInputRaw: string[] = upShel.body.img_shelter;
+      // filter new image
+      const newImg: string[] = imgInputRaw.filter(url => !oldImg.includes(url));
+      // filter delete image
+      const deleteImg: string[] = oldImg.filter(url => !imgInputRaw.includes(url));
+      if(deleteImg.length > 0) await this.sheltersRepository.deleteManyImg(deleteImg);
+      if(newImg.length > 0) await this.sheltersRepository.createManyImg({
+        shelter_id: upShel.id,
+        body: newImg
+      })
+    }
     // update shelter
     const upShelter: Shelter = await this.sheltersRepository.updatedShelter(upShel);
     return upShelter;

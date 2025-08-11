@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { NewShelter, SheltersRepositoryItf, UpdateCare, UpdateShelter } from "./shelters.repository.interface";
+import { NewImageUrl, NewShelter, OutDetailShelter, SheltersRepositoryItf, UpdateCare, UpdateShelter } from "./shelters.repository.interface";
 import { PrismaService } from "prisma/prisma.service";
 import { handlePrismaError } from "../global/utils/prisma.error.util";
 import { Condition } from "../global/entities/condition-entity";
@@ -39,10 +39,15 @@ export class SheltersRepository implements SheltersRepositoryItf {
         }
     };
 
-    async getShelter(id: number): Promise<Shelter | undefined> {
+    async getShelter(id: number): Promise<OutDetailShelter | undefined> {
         try {
-            const shelter: Shelter | null = await this.prisma.shelter.findUnique({
-                where: { id }
+            const shelter: OutDetailShelter | null = await this.prisma.shelter.findUnique({
+                where: { id },
+                include: { 
+                    img_shelter: { select: { url: true } },
+                    farm: { select: { user_id: true } },
+                    care_give: true,
+                }
             });
             if(shelter === null) return undefined;
             return shelter;
@@ -107,7 +112,6 @@ export class SheltersRepository implements SheltersRepositoryItf {
                     category_id:newShel.body.category_id,
                     name: newShel.body.name,
                     location: newShel.body.location,
-                    img_shelter: newShel.body.img_shelter,
                     accomodate: newShel.body.accomodate,
                     description: newShel.body.description,
                     price_daily: newShel.body.price_daily,
@@ -128,7 +132,6 @@ export class SheltersRepository implements SheltersRepositoryItf {
                 data: {
                     name: upShel.body.name,
                     location: upShel.body.location,
-                    img_shelter: upShel.body.img_shelter,
                     accomodate: upShel.body.accomodate,
                     description: upShel.body.description,
                     price_daily: upShel.body.price_daily,
@@ -196,5 +199,34 @@ export class SheltersRepository implements SheltersRepositoryItf {
         } catch (error) {
             handlePrismaError(error);
         }
+    };
+
+    async createManyImg(allUrl: NewImageUrl): Promise<number> {
+        try {
+            const { count } = await this.prisma.imgShelter.createMany({
+                data: allUrl.body.map(imgUrl => ({
+                    shelter_id: allUrl.shelter_id,
+                    url: imgUrl
+                }))
+            });
+            return count;
+        } catch (error) {
+            handlePrismaError(error);
+        }        
+    };
+
+    async deleteManyImg(allUrl: string[]): Promise<number> {
+        try {
+            const { count } = await this.prisma.imgShelter.deleteMany({
+                where: {
+                    url: {
+                        in: allUrl.map(url => url)
+                    }
+                }
+            })
+            return count;
+        } catch (error) {
+            handlePrismaError(error);
+        }            
     }
 }
