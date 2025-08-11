@@ -96,12 +96,19 @@ model Livestock {
   price               Decimal                   @default(0.00) @db.Decimal(15,2)
   stock               Int
   description         String                    @db.Text()
-  img_animal          String[]                  @default([]) 
   created_at          DateTime?                 @default(now()) @db.Timestamptz(6)
   updated_at          DateTime?                 @default(now()) @db.Timestamptz(6)
   category            Category                  @relation(fields: [category_id], references: [id])
   detail_buy          DetailBuyTransaction[]
   care_transaction    CareTransaction[]
+  img_livestock       ImgLivestocks[]
+}
+
+model ImgLivestocks {
+  id                    Int                       @id @default(autoincrement())
+  livestock_id          Int
+  url                   String                    @db.Text()
+  livestock             Livestock                 @relation(fields: [livestock_id], references: [id])
 }
 
 model Shelter {
@@ -109,8 +116,7 @@ model Shelter {
   category_id   Int
   farm_id       Int
   name          String        @db.VarChar(100)
-  location      String        @db.VarChar(320)
-  // img_shelter   String[]      @default([]) 
+  location      String        @db.VarChar(320) 
   accomodate    Int
   description   String        @db.Text()
   price_daily   Decimal       @default(0.00) @db.Decimal(15,2)
