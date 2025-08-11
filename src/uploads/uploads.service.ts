@@ -1,16 +1,19 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { createClient } from '@supabase/supabase-js';
-import { ImageUpload, UploadsServiceItf } from './uploads.service.interface';
+import { DelImagesBucket, ImagesUpload, ImageUpload, UploadsServiceItf } from './uploads.service.interface';
 import * as path from 'path';
 import { FileNotFoundException } from './exceptions/file-not-found-exception';
 import { UploadException } from './exceptions/upload-exception';
 import { BucketNameException } from './exceptions/bucket-name-exception';
+import { SheltersRepositoryItf } from 'src/shelters/shelters.repository.interface';
+import { ShelterAccessException } from 'src/shelters/exception/shelter-access-exception';
+import { ShelterNotFoundException } from 'src/shelters/exception/shelter-not-found-exception';
 
 @Injectable()
 export class UploadsService implements UploadsServiceItf {
   private supabase;
 
-  constructor() {
+  constructor(@Inject('SheltersRepositoryItf') private readonly sheltersRepository: SheltersRepositoryItf) {
     this.supabase = createClient(
       process.env.SUPABASE_URL,
       process.env.SUPABASE_KEY,
@@ -40,12 +43,16 @@ export class UploadsService implements UploadsServiceItf {
     return { url: publicUrl };
   }
 
-  async uploadImgShelter(upload: ImageUpload): Promise<{ url: string; }> {
+  async uploadImgShelter(upload: ImagesUpload): Promise<{ url: string; }> {
     if(!upload.file) throw new FileNotFoundException();
+    // check user is owner the shelter
+    const checkShelter: { farm: { user_id: number } } | undefined = await this.sheltersRepository.getRelationShelter(upload.shelterId);
+    if(!checkShelter) throw new ShelterNotFoundException();
+    if(checkShelter.farm.user_id !== upload.userId) throw new ShelterAccessException();
     // name file and path
     const originalName = upload.file.originalname;
     const fileName = `${Date.now()}-${path.parse(originalName).name}.jpg`;
-    const filePath = `shelters/${upload.userId}/${fileName}`;
+    const filePath = `shelters/${upload.shelterId}/${fileName}`;
     // upload process
     const { error: uploadError } = await this.supabase.storage
       .from(process.env.SUPABASE_BUCKET)
@@ -64,10 +71,15 @@ export class UploadsService implements UploadsServiceItf {
     return { url: publicUrl };
   }
 
-  async deleteImgShelter(url: string): Promise<{ message: string, url: string }> {
+  async deleteImgShelter(deleteImg: DelImagesBucket): Promise<{ message: string, url: string }> {
+    // check user is owner the shelter
+    const checkShelter: { farm: { user_id: number } } | undefined = await this.sheltersRepository.getRelationShelter(deleteImg.shelterId);
+    if(!checkShelter) throw new ShelterNotFoundException();
+    if(checkShelter.farm.user_id !== deleteImg.userId) throw new ShelterAccessException();
+    // name bucket
     const bucketName = "smafarm"
     // get pathname url, example -> "/storage/v1/object/public/smafarm/shelters/123/abc.jpg"
-    const parseUrl = new URL(url);
+    const parseUrl = new URL(deleteImg.url);
     // split url become array string, example -> ["", "storage", "v1", "object", "public", "smafarm", "shelters", "123", "abc.jpg"]
     const  partsUrl = parseUrl.pathname.split('/');
     // search position index by bucketName
@@ -76,10 +88,12 @@ export class UploadsService implements UploadsServiceItf {
     if(bucketIndex === -1) throw new BucketNameException();
     // get all path after bucketName, example -> ["shelters", "123", "abc.jpg"]
     const rawPath = partsUrl.slice(bucketIndex + 1);
+    // decode raw path for convert special character like spaces
+    const decodedPath = rawPath.map(path => decodeURIComponent(path));
     // combine raw path with slice for path
-    const filePath = rawPath.join('/');
+    const filePath = decodedPath.join('/');
     await this.supabase.storage.from(process.env.SUPABASE_BUCKET).remove([filePath]);
-    return { message: 'success deleted', url }
+    return { message: 'success deleted', url: deleteImg.url }
   }
 
 }

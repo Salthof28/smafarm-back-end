@@ -11,5 +11,6 @@ import { FarmsModule } from '../farms/farms.module';
     { provide: 'SheltersServiceItf', useClass: SheltersService },
     { provide: 'SheltersRepositoryItf', useClass: SheltersRepository }
   ],
+  exports: ['SheltersRepositoryItf']
 })
 export class SheltersModule {}
