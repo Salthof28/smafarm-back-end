@@ -132,6 +132,7 @@ export class SheltersRepository implements SheltersRepositoryItf {
                     accomodate: upShel.body.accomodate,
                     description: upShel.body.description,
                     price_daily: upShel.body.price_daily,
+                    updated_at: new Date()
                 }
             });
             return upShelter
