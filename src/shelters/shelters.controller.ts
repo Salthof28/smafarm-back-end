@@ -20,12 +20,12 @@ export class SheltersController {
 
   @Get()
   @TransformRes(ShelterBodyDto)
-  async getAllShelters(@Query('name') name?: string, @Query('location') location?: string, @Query('category') category?: string, @Query('low_price') low_price?: number, @Query('high_price') high_price?: number): Promise<Shelter[]> {
+  async getAllShelters(@Query('name') name?: string, @Query('location') location?: string, @Query('category_id') category_id?: number, @Query('low_price') low_price?: number, @Query('high_price') high_price?: number): Promise<Shelter[]> {
     try {
       const allShelters: Shelter[] = await this.sheltersService.getAllShelters({
         name,
         location,
-        category,
+        category_id,
         low_price,
         high_price
       });

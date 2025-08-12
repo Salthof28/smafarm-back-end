@@ -17,8 +17,6 @@ export class ShelterBodyDto {
     @Type(() => String)
     location: string;
     @Expose()
-    img_shelter: string[];
-    @Expose()
     @Type(() => Number)
     accomodate: number;
     @Expose()
@@ -32,4 +30,8 @@ export class ShelterBodyDto {
     @Expose()
     @Type(() => Date)
     updated_at: Date
+    @Expose()
+    img_shelter;
+    @Expose()
+    care_give
 }
