@@ -24,11 +24,11 @@ export class SheltersRepository implements SheltersRepositoryItf {
                 lte: query.high_price,
             };
             // where or
-            if(query?.name || query?.location || query?.category){
+            if(query?.name || query?.location || query?.category_id){
                 where.OR = [];
                 if(query.name) where.OR.push({ name: query.name });
                 if(query.location) where.OR.push({ location: query.location });
-                if(query.category) where.OR.push({ category: query.category });
+                if(query.category_id) where.OR.push({ category_id: query.category_id });
             }
             
             const allShelter: Shelter[] = await this.prisma.shelter.findMany({ where });
