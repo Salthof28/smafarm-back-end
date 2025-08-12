@@ -1,7 +1,9 @@
 export interface UploadsServiceItf {
     uploadImgProfile(upload: ImageUpload): Promise<{ url: string }>;
-    uploadImgShelter(upload: ImagesUpload): Promise<{ url: string }>;
-    deleteImgShelter(deleteImg: DelImagesBucket): Promise<{ message: string, url: string }>;
+    uploadImgShelter(upload: ImagesUploadShelter): Promise<{ url: string }>;
+    deleteImgShelter(deleteImg: DelImagesBucketShelter): Promise<{ message: string, url: string }>;
+    uploadImgLivestock(upload: ImagesUploadLivestock): Promise<{ url: string; }>
+    deleteImgLivestock(deleteImg: DelImagesBucketLivestock): Promise<{ message: string, url: string }>;
 }
 
 export interface ImageUpload {
@@ -9,14 +11,27 @@ export interface ImageUpload {
     file: Express.Multer.File
 }
 
-export interface ImagesUpload {
+export interface ImagesUploadShelter {
     userId: number,
     shelterId: number,
     file: Express.Multer.File
 }
 
-export interface DelImagesBucket {
+export interface DelImagesBucketShelter {
     userId: number,
     shelterId: number,
     url: string
 }
+
+export interface ImagesUploadLivestock {
+    userId: number,
+    livestockId: number,
+    file: Express.Multer.File
+}
+
+export interface DelImagesBucketLivestock {
+    userId: number,
+    livestockId: number,
+    url: string
+}
+
