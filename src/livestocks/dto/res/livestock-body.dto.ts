@@ -33,4 +33,6 @@ export class LivestockBodyDto {
     @Expose()
     @Type(() => Date)
     updated_at: Date
+    @Expose()
+    img_livestock;
 }

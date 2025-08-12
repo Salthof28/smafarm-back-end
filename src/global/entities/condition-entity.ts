@@ -4,9 +4,10 @@ export class Condition {
     name?: string;
     location?: string;
     rating?: number;
-    category?: string;
+    category_id?: number;
     low_price?: number;
     high_price?: number;
     price_daily?;
+    price?;
     OR?: any[]
 }

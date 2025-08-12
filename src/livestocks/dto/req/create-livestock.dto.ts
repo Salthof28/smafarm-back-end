@@ -5,7 +5,7 @@ export class CreateLivestockDto {
     @IsNumber()
     category_id: number;
     @IsString()
-    title: string;
+    name: string;
     @IsNumber()
     age: number;
     @IsNumber()

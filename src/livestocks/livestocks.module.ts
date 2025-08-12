@@ -2,8 +2,10 @@ import { Module } from '@nestjs/common';
 import { LivestocksService } from './livestocks.service';
 import { LivestocksController } from './livestocks.controller';
 import { LivestocksRepository } from './livestocks.repository';
+import { FarmsModule } from '../farms/farms.module';
 
 @Module({
+  imports: [FarmsModule],
   controllers: [LivestocksController],
   providers: [
     { provide: 'LivestocksServiceItf', useClass: LivestocksService },
