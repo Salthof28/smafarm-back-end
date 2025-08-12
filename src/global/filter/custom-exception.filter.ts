@@ -15,7 +15,8 @@ import { CategoryNotFoundException } from "../../category/exceptions/category-no
 import { FarmNotFoundException } from "../../farms/exception/farm-not-found-exception";
 import { ShelterNotFoundException } from "../../shelters/exception/shelter-not-found-exception";
 import { CareNotFoundException } from "../../shelters/exception/care-not-found-exception";
-import { ShelterAccessException } from "src/shelters/exception/shelter-access-exception";
+import { ShelterAccessException } from "../../shelters/exception/shelter-access-exception";
+import { LivestockNotFoundException } from "../../livestocks/exception/livestock-not-found-exception";
 
 
 @Catch(CustomExceptionGen)
@@ -138,7 +139,13 @@ export class ExceptionFilterGen implements ExceptionFilter {
                 statusCode: HttpStatus.BAD_REQUEST,
             }
         }
-
+        else if(exception instanceof LivestockNotFoundException) {
+            responseBody = {
+                message: exception.message,
+                error: exception.name,
+                statusCode: HttpStatus.NOT_FOUND,
+            }
+        }
         httpAdapter.reply(res, responseBody, responseBody.statusCode)
     }
 }
