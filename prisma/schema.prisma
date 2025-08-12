@@ -91,7 +91,7 @@ model Livestock {
   id                  Int                       @id @default(autoincrement())
   category_id         Int
   farm_id             Int
-  title               String                    @db.VarChar(100)
+  name                String                    @db.VarChar(100)
   age                 Int
   price               Decimal                   @default(0.00) @db.Decimal(15,2)
   stock               Int
