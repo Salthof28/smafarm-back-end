@@ -9,6 +9,7 @@ import { CategoryModule } from './category/category.module';
 import { FarmsModule } from './farms/farms.module';
 import { SheltersModule } from './shelters/shelters.module';
 import { LivestocksModule } from './livestocks/livestocks.module';
+import { TransactionsModule } from './transactions/transactions.module';
 
 @Module({
   imports: [
@@ -22,7 +23,8 @@ import { LivestocksModule } from './livestocks/livestocks.module';
     CategoryModule,
     FarmsModule,
     SheltersModule,
-    LivestocksModule
+    LivestocksModule,
+    TransactionsModule
   ],
   controllers: [AppController],
   providers: [AppService],

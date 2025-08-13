@@ -12,7 +12,8 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
       transform: true
     })
-  )
+  );
+   app.enableCors();
 
   const httpAdapterHost = app.get(HttpAdapterHost);
   app.useGlobalFilters(new ExceptionFilterGen(httpAdapterHost))
