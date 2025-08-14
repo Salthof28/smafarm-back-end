@@ -73,9 +73,11 @@ export class SheltersRepository implements SheltersRepositoryItf {
         }
     }
     
-    async getAllCare(): Promise<CareGive[] | undefined> {
+    async getAllCare(id?: number[]): Promise<CareGive[] | undefined> {
         try {
-            const allCare: CareGive[] = await this.prisma.careGive.findMany();
+            const where: any = {}
+            if(id) where.id = { in: id }
+            const allCare: CareGive[] = await this.prisma.careGive.findMany({where});
             if(allCare.length < 1) return undefined;
             return allCare
         } catch (error) {

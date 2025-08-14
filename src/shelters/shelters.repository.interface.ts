@@ -9,7 +9,7 @@ export interface SheltersRepositoryItf {
     getAllShelter(query?: Condition): Promise<Shelter[] | undefined>;
     getShelter(id: number): Promise<OutDetailShelter | undefined>;
     getRelationShelter(id: number): Promise<{ farm: { user_id: number } } | undefined>;
-    getAllCare(): Promise<CareGive[] | undefined>;
+    getAllCare(id?: number[]): Promise<CareGive[] | undefined>;
     getRelationCare(id: number): Promise<{ shelter: { farm: { user_id: number } } } | undefined>;
     createdShelter(newShel: NewShelter): Promise<Shelter>;
     updatedShelter(upShel: UpdateShelter): Promise<Shelter>;
