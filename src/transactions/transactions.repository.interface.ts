@@ -1,40 +1,100 @@
 import { Condition } from "src/global/entities/condition-entity";
-import { CreateTransactionDto } from "./dto/req/create-transaction.dto";
+import { TransactionDto } from "./dto/req/transaction.dto";
 import { UpdateTransactionDto } from "./dto/req/update-transaction.dto";
-import { CreateCareTransactionDto } from "./dto/req/create-care-transaction.dto";
+import { CreateCareTransactionDto } from "./dto/req/care-transaction.dto";
 import { UpdateCareTransactionDto } from "./dto/req/update-care-transation.dto";
-import { CreateDetailCareTransactioDto } from "./dto/req/create-detail-care-transaction.dto";
-import { CreateDetailBuyDto } from "./dto/req/create-detail-buy.dto";
-import { UpdateDetailCareTransactioDto } from "./dto/req/update-detail-care-transaction.dto";
+import { CreateDetailBuyDto } from "./dto/req/detail-buy.dto";
 import { UpdateDetailBuyDto } from "./dto/req/update-detail-buy.dto";
 import { CareTransaction, DetailBuyTransaction, DetailCareTransaction, Transaction } from "@prisma/client";
 
 export interface TransactionsRepositoryItf {
     getAll(query?: Condition): Promise<Transaction[] | undefined>;
-    getOne(id: number): Promise<Transaction | undefined>;
-    createdTransaction(body: CreateTransactionDto): Promise<Transaction>;
+    // getAllBuy(transaction_id: number): Promise<DetailBuyTransaction[] | undefined>;
+    getAllCare(transaction_id?: number, booking?: AllCareBooking): Promise<CareTransaction[] | undefined>;
+    getAllbooking(booking: AllBooking[]): Promise<OutAllBooking[]>
+    getOne(id: number): Promise<OutFarmIdTransaction | undefined>;
+    getOneBuy(id: number): Promise<OutAccessBuy | undefined>;
+    getOneCare(id: number): Promise<OutAccessCare | undefined>;
+    createdCareTransaction(careTransaction: CreateTransactionCare): Promise<Transaction>;
     updatedTransaction(upTrans: UpdateTransaction): Promise<Transaction>;
-    createdCareTransaction(body: CreateCareTransactionDto): Promise<CareTransaction>;
+    createdBuyTransaction(create: CreateTransactionBuy): Promise<Transaction>;
     updatedCareTransaction(careTrans: UpdateCareTransaction): Promise<CareTransaction>;
-    createdDetailCare(body: CreateDetailCareTransactioDto): Promise<DetailCareTransaction>;
-    updatedDetailCare(detailCare: UpdateDetailCare): Promise<DetailCareTransaction>;
-    createdDetailBuy(body: CreateDetailBuyDto): Promise<DetailBuyTransaction>;
+    createdBuyCareTransaction(create: CreateBuyCareTransaction): Promise<Transaction>;
     updatedDetailBuy(upBuy: UpdateDetailBuy): Promise<DetailBuyTransaction>;
 }
 
+export interface AllCareBooking {
+    shelter_id: number, 
+    start: Date, 
+    finish: Date
+}
+
+export interface AllBooking {
+    shelter_id: number, 
+    start_date: { lte: Date },
+    finish_date: { gte: Date },
+}
 export interface UpdateTransaction {
     id: number,
     body: UpdateTransactionDto
 }
+export interface CreateTransactionCare {
+    transaction: TransactionDto,
+    care: CreateCareTransactionDto[],
+}
+
 export interface UpdateCareTransaction {
     id: number,
     body: UpdateCareTransactionDto
 }
-export interface UpdateDetailCare {
-    id: number,
-    body: UpdateDetailCareTransactioDto
+export interface CreateBuyCareTransaction {
+    transaction: TransactionDto,
+    care: CreateCareTransactionDto[],
+    buy: CreateDetailBuyDto[],  
 }
 export interface UpdateDetailBuy {
     id: number,
     body: UpdateDetailBuyDto
+}
+export interface CreateTransactionBuy {
+    transaction: TransactionDto,
+    buy: CreateDetailBuyDto[],   
+}
+
+export type OutFarmIdTransaction = (Transaction & { 
+    detail_buy: DetailBuyTransaction[],
+    care_transaction: CareTransaction[],
+    farm: { 
+        user_id: number 
+    } 
+}); 
+export type OutAccessBuy =  (DetailBuyTransaction & {
+    transaction_id,
+    transaction: { 
+        customer_id: number,
+        farm: {
+            user_id: number 
+        },
+        status_transaction: string
+    }
+});
+
+export type OutAccessCare =  (CareTransaction & {
+    // transaction_id,
+    transaction: { 
+        customer_id: number,
+        farm: 
+        { user_id: 
+            number 
+        },
+        status_transaction: string
+    },
+    shelter: {
+        accomodate: number
+    }
+})
+
+export type OutAllBooking = {
+    shelter_id: number,
+    total_livestock: number
 }

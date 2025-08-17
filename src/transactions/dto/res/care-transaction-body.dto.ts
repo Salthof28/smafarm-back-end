@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { Expose, Type } from "class-transformer";
+import { DetailCareTransactionBodyDto } from "./detail-care-transactiom-body.dto";
 
 export class CareTransactionBodyDto {
     @Expose()
@@ -11,6 +12,9 @@ export class CareTransactionBodyDto {
     @Expose()
     @Type(() => Number)
     livestock_id: number;
+    @Expose()
+    @Type(() => Number)
+    total_livestock: number
     @Expose()
     @Type(() => Number)
     shelter_id: number;
@@ -28,4 +32,7 @@ export class CareTransactionBodyDto {
     @Expose()
     @Type(() => Number)
     sub_total: Prisma.Decimal;
+    @Expose()
+    @Type(() => DetailCareTransactionBodyDto)
+    detail_care: DetailCareTransactionBodyDto[];
 }

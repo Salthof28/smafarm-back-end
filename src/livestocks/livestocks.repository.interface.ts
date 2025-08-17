@@ -12,6 +12,7 @@ export interface LivestocksRepositoryItf {
     deleted(id: number): Promise<Livestock>;
     createManyImg(allUrl: NewImgUrlLive): Promise<number>;
     deleteManyImg(allUrl: string[]): Promise<number>;
+    getAllLiveTransaction(id: number[]): Promise<Livestock[] | undefined>;
 }
 
 export type OutDetailLivestock = (Livestock & { img_livestock: { url:string }[], farm: { user_id: number } });

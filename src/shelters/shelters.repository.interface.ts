@@ -1,4 +1,4 @@
-import { CareGive, Shelter } from "@prisma/client";
+import { CareGive, Prisma, Shelter } from "@prisma/client";
 import { Condition } from "../global/entities/condition-entity";
 import { CreateCareDto } from "./dto/req/create-care.dto";
 import { CreateShelterDto } from "./dto/req/create-shelter.dto";
@@ -9,7 +9,7 @@ export interface SheltersRepositoryItf {
     getAllShelter(query?: Condition): Promise<Shelter[] | undefined>;
     getShelter(id: number): Promise<OutDetailShelter | undefined>;
     getRelationShelter(id: number): Promise<{ farm: { user_id: number } } | undefined>;
-    getAllCare(id?: number[]): Promise<CareGive[] | undefined>;
+    getAllCare(id?: number[]): Promise<OutCareShelter[] | undefined>;
     getRelationCare(id: number): Promise<{ shelter: { farm: { user_id: number } } } | undefined>;
     createdShelter(newShel: NewShelter): Promise<Shelter>;
     updatedShelter(upShel: UpdateShelter): Promise<Shelter>;
@@ -19,6 +19,7 @@ export interface SheltersRepositoryItf {
     createdCare(body: CreateCareDto): Promise<CareGive>;
     updatedCare(upCare: UpdateCare): Promise<CareGive>;
     deletedCare(id: number): Promise<CareGive>;
+    getAllAccomodateShelter(id_shelter: number[]): Promise<OutAccomodate[]>;
 }
 
 export interface UpdateShelter {
@@ -40,3 +41,7 @@ export interface NewImageUrl {
 }
 
 export type OutDetailShelter = (Shelter & { img_shelter: { url: string }[], farm: { user_id: number }, care_give: CareGive[] })
+
+export type OutAccomodate = { id: number, accomodate: number };
+
+export type OutCareShelter = (CareGive & { shelter: { id: number, price_daily: Prisma.Decimal } });

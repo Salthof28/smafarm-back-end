@@ -130,6 +130,7 @@ model Shelter {
   farm          Farms         @relation(fields: [farm_id], references: [id])
   care_give     CareGive[] // perawatan yg diberikan
   img_shelter   ImgShelter[]
+  transaction   CareTransaction[]
 }
 
 model ImgShelter {
@@ -174,21 +175,23 @@ model DetailBuyTransaction {
   unit_price            Decimal               @default(0.00) @db.Decimal(15,2)
   sub_total             Decimal               @default(0.00) @db.Decimal(15,2)
   transaction           Transaction           @relation(fields: [transaction_id], references: [id])
-  livestock             Livestock             @relation(fields: [livestock_id], references: [id])
+  livestock             Livestock            @relation(fields: [livestock_id], references: [id])
 }
 
 model CareTransaction {
   id                    Int                         @id @default(autoincrement())
   transaction_id        Int                   
-  livestock_id          Int
+  livestock_id          Int?                  
   shelter_id            Int
-  duration_care         Int
+  total_livestock       Int
+  duration_care         Int                         @default(0)
   start_date            DateTime                    @db.Timestamptz(6)
   finish_date           DateTime                    @db.Timestamptz(6)
   one_day_price         Decimal                     @default(0.00) @db.Decimal(15,2)
   sub_total             Decimal                     @default(0.00) @db.Decimal(15,2)
   transaction           Transaction                 @relation(fields: [transaction_id], references: [id])
-  livestock             Livestock                   @relation(fields: [livestock_id], references: [id])
+  livestock             Livestock?                  @relation(fields: [livestock_id], references: [id])
+  shelter               Shelter                     @relation(fields: [shelter_id], references: [id])
   detail_care           DetailCareTransaction[]
 }
 

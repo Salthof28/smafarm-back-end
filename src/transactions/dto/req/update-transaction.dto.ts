@@ -1,10 +1,16 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { CreateTransactionDto } from './create-transaction.dto';
-import { IsNumber, IsString } from 'class-validator';
+import { CreateTransactionDto } from './transaction.dto';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { StatusTransaction } from '@prisma/client';
 
 export class UpdateTransactionDto extends PartialType(CreateTransactionDto) {
+    @IsOptional()
     @IsNumber()
-    rating: number;
+    rating?: number;
+    @IsOptional()
     @IsString()
-    review: string;
+    review?: string;
+    @IsOptional()
+    @IsString()
+    status_transaction?: StatusTransaction;
 }

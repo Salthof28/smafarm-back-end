@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { NewImageUrl, NewShelter, OutDetailShelter, SheltersRepositoryItf, UpdateCare, UpdateShelter } from "./shelters.repository.interface";
+import { NewImageUrl, NewShelter, OutAccomodate, OutCareShelter, OutDetailShelter, SheltersRepositoryItf, UpdateCare, UpdateShelter } from "./shelters.repository.interface";
 import { PrismaService } from "prisma/prisma.service";
 import { handlePrismaError } from "../global/utils/prisma.error.util";
 import { Condition } from "../global/entities/condition-entity";
@@ -73,11 +73,21 @@ export class SheltersRepository implements SheltersRepositoryItf {
         }
     }
     
-    async getAllCare(id?: number[]): Promise<CareGive[] | undefined> {
+    async getAllCare(id?: number[]): Promise<OutCareShelter[] | undefined> {
         try {
             const where: any = {}
             if(id) where.id = { in: id }
-            const allCare: CareGive[] = await this.prisma.careGive.findMany({where});
+            const allCare: OutCareShelter[] = await this.prisma.careGive.findMany({
+                where,
+                include: {
+                    shelter: {
+                        select: {
+                            id: true,
+                            price_daily: true,
+                        }
+                    }
+                }
+            });
             if(allCare.length < 1) return undefined;
             return allCare
         } catch (error) {
@@ -230,5 +240,17 @@ export class SheltersRepository implements SheltersRepositoryItf {
         } catch (error) {
             handlePrismaError(error);
         }            
+    };
+
+    async getAllAccomodateShelter(id_shelter: number[]): Promise<OutAccomodate[]> {
+        try {
+            const shelter: OutAccomodate[] = await this.prisma.shelter.findMany({
+                where: { id: { in: id_shelter } },
+                select: { id: true, accomodate: true },
+            });
+            return shelter
+        } catch (error) {
+            handlePrismaError(error);
+        }    
     }
 }

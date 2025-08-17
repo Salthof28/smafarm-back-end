@@ -149,5 +149,17 @@ export class LivestocksRepository implements LivestocksRepositoryItf {
             handlePrismaError(error);
         }        
     }
+
+    async getAllLiveTransaction(id: number[]): Promise<Livestock[] | undefined> {
+        try {
+            const where: any = {};
+            if(id) where.id = { in: id };
+            const allLivestock: Livestock[] = await this.prisma.livestock.findMany({ where });
+            if(allLivestock.length < 1) return undefined;
+            return allLivestock;    
+        } catch (error) {
+            handlePrismaError(error);
+        }          
+    }
     
 }
