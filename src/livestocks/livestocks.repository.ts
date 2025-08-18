@@ -51,8 +51,11 @@ export class LivestocksRepository implements LivestocksRepositoryItf {
             const livestock: OutDetailLivestock | null = await this.prisma.livestock.findUnique({
                 where: { id },
                 include: {
+                    category: {
+                        select: { name: true }
+                    },
                     img_livestock: { select: { url: true } },
-                    farm: { select: { user_id: true } }
+                    farm: true
                 }
             });
             if(livestock === null) return undefined;

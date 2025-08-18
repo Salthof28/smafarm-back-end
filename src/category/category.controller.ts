@@ -11,9 +11,6 @@ import { UpdateCategoryDto } from './dto/req/update-category.dto';
 import { TransformRes } from '../global/interceptors/transform-body-res.interceptor';
 import { CategoryBodyDto } from './dto/res/category-body.dto';
 
-@UseGuards(RolesGuard)
-@Roles(Role.ADMIN)
-@UseGuards(JwtAuthGuard)
 @Controller('category')
 @TransformRes(CategoryBodyDto)
 export class CategoryController {
@@ -30,6 +27,9 @@ export class CategoryController {
     }
   }
 
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard)
   @Post()
   async createdCat(@Body() body: CreateCategoryDto): Promise<Category> {
     try {
@@ -52,6 +52,9 @@ export class CategoryController {
     }
   }
 
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   async updatedCat(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateCategoryDto): Promise<Category> {
     try {
@@ -66,6 +69,9 @@ export class CategoryController {
     }
   };
 
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async deletedCat(@Param('id', ParseIntPipe) id: number): Promise<Category> {
     try {

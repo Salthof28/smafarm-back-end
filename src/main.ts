@@ -13,7 +13,14 @@ async function bootstrap() {
       transform: true
     })
   );
-   app.enableCors();
+    // enable CORS
+  // app.enableCors({
+  //   origin: 'http://localhost:3000', // frontend Next.js
+  //   credentials: true, // kalau pake cookie / session
+  // });
+  app.enableCors({
+    origin: true,
+  });
 
   const httpAdapterHost = app.get(HttpAdapterHost);
   app.useGlobalFilters(new ExceptionFilterGen(httpAdapterHost))

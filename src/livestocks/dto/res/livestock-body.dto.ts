@@ -5,11 +5,8 @@ export class LivestockBodyDto {
     @Type(() => Number)
     id: number
     @Expose()
-    @Type(() => Number)
-    farm_id: number
-    @Expose()
     @Type(() => String)
-    title: string;
+    name: string;
     @Expose()
     @Type(() => Number)
     age: number;
@@ -31,6 +28,8 @@ export class LivestockBodyDto {
     @Expose()
     @Type(() => Date)
     updated_at: Date
+    @Expose()
+    farm;
     @Expose()
     category;
     @Expose()
