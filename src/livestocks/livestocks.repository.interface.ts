@@ -4,7 +4,7 @@ import { CreateLivestockDto } from "./dto/req/create-livestock.dto";
 import { UpdateLivestockDto } from "./dto/req/update-livestock.dto";
 
 export interface LivestocksRepositoryItf {
-    getAll(query?:Condition): Promise<Livestock[] | undefined>;
+    getAll(query?:Condition): Promise<Livestock[]>;
     getOne(id: number): Promise<OutDetailLivestock | undefined>;
     getRelationLivestock(id: number): Promise<OutRelationLivestock | undefined>;
     created(newLive: NewLivestock): Promise<Livestock>;
