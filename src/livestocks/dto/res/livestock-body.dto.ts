@@ -28,6 +28,7 @@ export class LivestockBodyDto {
     @Expose()
     @Type(() => String)
     location: string;
+    @Expose()
     @Type(() => Date)
     created_at: Date
     @Expose()

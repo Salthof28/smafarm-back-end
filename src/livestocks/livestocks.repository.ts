@@ -30,7 +30,12 @@ export class LivestocksRepository implements LivestocksRepositoryItf {
                 if(query.category_id) where.OR.push({ category_id: query.category_id });
             }
             
-            const allShelter: Livestock[] = await this.prisma.livestock.findMany({ where });
+            const allShelter: Livestock[] = await this.prisma.livestock.findMany({
+                where,
+                include: { img_livestock: {
+                    select: { url: true }
+                } }
+            });
             if(allShelter.length < 1) return undefined;
             return allShelter;
         } catch (error) {
