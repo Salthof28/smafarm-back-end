@@ -13,8 +13,7 @@ export class LivestocksService implements LivestocksServiceItf {
   constructor(@Inject('LivestocksRepositoryItf') private readonly livestocksRepository: LivestocksRepositoryItf, @Inject('FarmsRepositoryItf') private readonly farmsRepository: FarmsRepositoryItf){}
   
   async getAllLivestock(query?: Condition): Promise<Livestock[]> {
-    const allLivestock: Livestock[] | undefined = await this.livestocksRepository.getAll(query);
-    if(!allLivestock) throw new LivestockNotFoundException()
+    const allLivestock: Livestock[] = await this.livestocksRepository.getAll(query);
     return allLivestock
   };
 

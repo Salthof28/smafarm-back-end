@@ -15,8 +15,7 @@ export class SheltersService implements SheltersServiceItf {
   constructor(@Inject('SheltersRepositoryItf') private readonly sheltersRepository: SheltersRepositoryItf, @Inject('FarmsRepositoryItf') private readonly farmsRepository: FarmsRepositoryItf){}
   
   async getAllShelters(query?: Condition): Promise<Shelter[]> {
-    const allShelters: Shelter[] | undefined = await this.sheltersRepository.getAllShelter(query);
-    if(!allShelters) throw new ShelterNotFoundException()
+    const allShelters: Shelter[] = await this.sheltersRepository.getAllShelter(query);
     return allShelters;
   };
 

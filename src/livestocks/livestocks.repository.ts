@@ -9,7 +9,7 @@ import { handlePrismaError } from "../global/utils/prisma.error.util";
 export class LivestocksRepository implements LivestocksRepositoryItf {
     constructor(private readonly prisma: PrismaService){}
     
-    async getAll(query?: Condition): Promise<Livestock[] | undefined> {
+    async getAll(query?: Condition): Promise<Livestock[]> {
         try {
             const where: Condition = {}
             if(query?.low_price && query?.high_price) where.price = {
@@ -32,11 +32,14 @@ export class LivestocksRepository implements LivestocksRepositoryItf {
             
             const allShelter: Livestock[] = await this.prisma.livestock.findMany({
                 where,
-                include: { img_livestock: {
-                    select: { url: true }
-                } }
+                include: { 
+                    category: true,
+                    img_livestock: {
+                        select: { url: true }
+                    },
+                    
+                }
             });
-            if(allShelter.length < 1) return undefined;
             return allShelter;
         } catch (error) {
             handlePrismaError(error);

@@ -6,9 +6,6 @@ export class LivestockBodyDto {
     id: number
     @Expose()
     @Type(() => Number)
-    category_id: number
-    @Expose()
-    @Type(() => Number)
     farm_id: number
     @Expose()
     @Type(() => String)
@@ -34,6 +31,8 @@ export class LivestockBodyDto {
     @Expose()
     @Type(() => Date)
     updated_at: Date
+    @Expose()
+    category;
     @Expose()
     img_livestock;
 }
