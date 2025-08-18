@@ -10,7 +10,7 @@ import { CreateCareDto } from "./dto/req/create-care.dto";
 export class SheltersRepository implements SheltersRepositoryItf {
     constructor(private readonly prisma: PrismaService){}
 
-    async getAllShelter(query?: Condition): Promise<Shelter[]> {
+    async getAllShelter(query?: Condition): Promise<Shelter[] | undefined> {
         try {
             const where: Condition = {}
             if(query?.low_price && query?.high_price) where.price_daily = {
@@ -32,6 +32,7 @@ export class SheltersRepository implements SheltersRepositoryItf {
             }
             
             const allShelter: Shelter[] = await this.prisma.shelter.findMany({ where });
+            if(allShelter.length < 1) return undefined;
             return allShelter;
         } catch (error) {
             handlePrismaError(error);

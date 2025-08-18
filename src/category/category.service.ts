@@ -10,7 +10,8 @@ export class CategoryService implements CategoryServiceItf {
   constructor(@Inject('CategoryRepositoryItf') private readonly categoryRepository: CategoryRepositoryItf) {}
 
   async getAllCat(): Promise<Category[]> {
-    const allCat: Category[] = await this.categoryRepository.getAll();
+    const allCat: Category[] | undefined = await this.categoryRepository.getAll();
+    if(!allCat) throw new CategoryNotFoundException();
     return allCat;
   };
 

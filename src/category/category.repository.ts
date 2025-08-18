@@ -9,9 +9,10 @@ import { handlePrismaError } from "../global/utils/prisma.error.util";
 export class CategoryRepository implements CategoryRepositoryItf {
     constructor(private readonly prisma: PrismaService){}
 
-    async getAll(): Promise<Category[]> {
+    async getAll(): Promise<Category[] | undefined> {
         try {
             const allCat: Category[] = await this.prisma.category.findMany({});
+            if(allCat.length < 1) return undefined;
             return allCat;
         } catch (error) {
             handlePrismaError(error);
