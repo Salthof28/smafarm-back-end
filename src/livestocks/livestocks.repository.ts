@@ -12,22 +12,26 @@ export class LivestocksRepository implements LivestocksRepositoryItf {
     async getAll(query?: Condition): Promise<Livestock[]> {
         try {
             const where: Condition = {}
-            if(query?.low_price && query?.high_price) where.price = {
-                gte: query.low_price,
-                lte: query.high_price,
-            };
-            else if(query?.low_price && !query?.high_price) where.price = {
-                gte: query.low_price,
-            };
-            else if(!query?.low_price && query?.high_price) where.price = {
-                lte: query.high_price,
-            };
+            if (query?.category_id) where.category_id = query.category_id;
+
+            if (query?.low_price || query?.high_price) {
+            where.price = {};
+            if (query.low_price) where.price.gte = query.low_price;
+            if (query.high_price) where.price.lte = query.high_price;
+            }
             // where or
-            if(query?.name || query?.location || query?.category_id){
+            if(query?.name || query?.location){
                 where.OR = [];
-                if(query.name) where.OR.push({ name: query.name });
-                if(query.location) where.OR.push({ location: query.location });
-                if(query.category_id) where.OR.push({ category_id: query.category_id });
+                if(query.name) where.OR.push({ name: {
+                        contains: query.name,
+                        mode: 'insensitive'
+                    } 
+                });
+                if(query.location) where.OR.push({ location: {
+                        contains: query.location,
+                        mode: 'insensitive'
+                    }
+                });
             }
             
             const allShelter: Livestock[] = await this.prisma.livestock.findMany({
