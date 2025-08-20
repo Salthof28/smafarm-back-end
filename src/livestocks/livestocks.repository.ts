@@ -16,8 +16,8 @@ export class LivestocksRepository implements LivestocksRepositoryItf {
 
             if (query?.low_price || query?.high_price) {
             where.price = {};
-            if (query.low_price) where.price.gte = query.low_price;
-            if (query.high_price) where.price.lte = query.high_price;
+                if (query.low_price) where.price.gte = query.low_price;
+                if (query.high_price) where.price.lte = query.high_price;
             }
             // where or
             if(query?.name || query?.location){
@@ -37,7 +37,9 @@ export class LivestocksRepository implements LivestocksRepositoryItf {
             const allShelter: Livestock[] = await this.prisma.livestock.findMany({
                 where,
                 include: { 
-                    category: true,
+                    category: {
+                        select: { name: true }
+                    },
                     img_livestock: {
                         select: { url: true }
                     },
@@ -55,9 +57,7 @@ export class LivestocksRepository implements LivestocksRepositoryItf {
             const livestock: OutDetailLivestock | null = await this.prisma.livestock.findUnique({
                 where: { id },
                 include: {
-                    category: {
-                        select: { name: true }
-                    },
+                    category: true,
                     img_livestock: { select: { url: true } },
                     farm: true
                 }

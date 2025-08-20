@@ -13,25 +13,40 @@ export class SheltersRepository implements SheltersRepositoryItf {
     async getAllShelter(query?: Condition): Promise<Shelter[]> {
         try {
             const where: Condition = {}
-            if(query?.low_price && query?.high_price) where.price_daily = {
-                gte: query.low_price,
-                lte: query.high_price,
-            };
-            else if(query?.low_price && !query?.high_price) where.price_daily = {
-                gte: query.low_price,
-            };
-            else if(!query?.low_price && query?.high_price) where.price_daily = {
-                lte: query.high_price,
-            };
+            if (query?.category_id) where.category_id = query.category_id;
+
+            if (query?.low_price || query?.high_price) {
+            where.price = {};
+                if (query.low_price) where.price.gte = query.low_price;
+                if (query.high_price) where.price.lte = query.high_price;
+            }
             // where or
-            if(query?.name || query?.location || query?.category_id){
+            if(query?.name || query?.location){
                 where.OR = [];
-                if(query.name) where.OR.push({ name: query.name });
-                if(query.location) where.OR.push({ location: query.location });
-                if(query.category_id) where.OR.push({ category_id: query.category_id });
+                if(query.name) where.OR.push({ name: {
+                        contains: query.name,
+                        mode: 'insensitive'
+                    } 
+                });
+                if(query.location) where.OR.push({ location: {
+                        contains: query.location,
+                        mode: 'insensitive'
+                    }
+                });
             }
             
-            const allShelter: Shelter[] = await this.prisma.shelter.findMany({ where });
+            const allShelter: Shelter[] = await this.prisma.shelter.findMany({ 
+                where,
+                include: { 
+                    category: {
+                        select: { name: true }
+                    },
+                    img_shelter: {
+                        select: { url: true }
+                    },
+                    
+                }
+            });
             return allShelter;
         } catch (error) {
             handlePrismaError(error);
@@ -43,8 +58,9 @@ export class SheltersRepository implements SheltersRepositoryItf {
             const shelter: OutDetailShelter | null = await this.prisma.shelter.findUnique({
                 where: { id },
                 include: { 
+                    category: true,
                     img_shelter: { select: { url: true } },
-                    farm: { select: { user_id: true } },
+                    farm: true,
                     care_give: true,
                 }
             });

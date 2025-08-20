@@ -1,15 +1,10 @@
 import { Expose, Type } from "class-transformer";
+import { CareBodyDto } from "./care-body.dto";
 
 export class ShelterBodyDto {
     @Expose()
     @Type(() => Number)
     id: number
-    @Expose()
-    @Type(() => Number)
-    category_id: number
-    @Expose()
-    @Type(() => Number)
-    farm_id: number
     @Expose()
     @Type(() => String)
     name: string;
@@ -25,13 +20,19 @@ export class ShelterBodyDto {
     @Expose()
     @Type(() => Number)
     price_daily: number;
+    @Expose()
     @Type(() => Date)
     created_at: Date
     @Expose()
     @Type(() => Date)
     updated_at: Date
     @Expose()
+    farm;
+    @Expose()
+    category;
+    @Expose()
     img_shelter;
     @Expose()
-    care_give
+    @Type(() => CareBodyDto)
+    care_give: CareBodyDto[]
 }
