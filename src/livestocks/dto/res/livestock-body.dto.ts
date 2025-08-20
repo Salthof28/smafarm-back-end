@@ -6,6 +6,9 @@ export class LivestockBodyDto {
     id: number
     @Expose()
     @Type(() => String)
+    farm_id: number;
+    @Expose()
+    @Type(() => String)
     name: string;
     @Expose()
     @Type(() => Number)

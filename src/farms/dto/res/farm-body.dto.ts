@@ -1,4 +1,5 @@
 import { Expose, Type } from "class-transformer";
+import { ShelterBodyDto } from "src/shelters/dto/res/shelter-body.dto";
 
 export class FarmBodyDto {
     @Expose()
@@ -25,4 +26,7 @@ export class FarmBodyDto {
     @Expose()
     @Type(() => Date)
     updated_at: Date
+    @Expose()
+    @Type(() => ShelterBodyDto)
+    shelters: ShelterBodyDto[];
 }

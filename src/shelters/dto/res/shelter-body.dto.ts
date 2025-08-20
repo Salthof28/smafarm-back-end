@@ -1,5 +1,6 @@
 import { Expose, Type } from "class-transformer";
 import { CareBodyDto } from "./care-body.dto";
+import { CareTransactionBodyDto } from "src/transactions/dto/res/care-transaction-body.dto";
 
 export class ShelterBodyDto {
     @Expose()
@@ -32,6 +33,9 @@ export class ShelterBodyDto {
     category;
     @Expose()
     img_shelter;
+    @Expose()
+    @Type(() => CareTransactionBodyDto)
+    transaction: CareTransactionBodyDto[];
     @Expose()
     @Type(() => CareBodyDto)
     care_give: CareBodyDto[]

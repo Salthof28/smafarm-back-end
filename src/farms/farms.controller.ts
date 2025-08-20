@@ -108,4 +108,15 @@ export class FarmsController {
       throw new InternalServerErrorException()
     }
   };
+
+  @Get('shelter/:id')
+  async getSheltersfarm(@Param('id', ParseIntPipe) id: number): Promise<Farms> {
+    try {
+      const farm: Farms = await this.farmsService.getSheltersFarm(id);
+      return farm;
+    } catch (error) {
+      if(error instanceof CustomExceptionGen) throw error;
+      throw new InternalServerErrorException()
+    }
+  }
 }

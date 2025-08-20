@@ -6,6 +6,7 @@ import { Farms } from "@prisma/client";
 export interface FarmsServiceItf {
     getAllFarms(query?: Condition): Promise<Farms[]>;
     getFarm(id: number): Promise<Farms>;
+    getSheltersFarm(id: number): Promise<Farms>;
     createdFarm(farm: BuildFarm): Promise<Farms>;
     updatedFarm(farm: UpdateFarm): Promise<Farms>;
     updatedFarmByAdmin(farm: UpdateFarm): Promise<Farms>;

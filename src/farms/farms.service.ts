@@ -21,6 +21,12 @@ export class FarmsService implements FarmsServiceItf {
         return farm;
     };
 
+    async getSheltersFarm(id: number): Promise<Farms> {
+        const farm: Farms | undefined = await this.farmsRepository.getShelterFarm(id);
+        if(!farm) throw new FarmNotFoundException();
+        return farm;
+    }
+
     async createdFarm(body: BuildFarm): Promise<Farms> {
         const createFarm: Farms = await this.farmsRepository.created(body);
         return createFarm;

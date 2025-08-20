@@ -21,6 +21,7 @@ export class CareTransactionBodyDto {
     @Expose()
     @Type(() => Number)
     duration_id: number;
+    @Expose()
     @Type(() => Date)
     start_date: Date;
     @Expose()
