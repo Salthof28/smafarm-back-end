@@ -174,8 +174,9 @@ model DetailBuyTransaction {
   total_livestock       Int
   unit_price            Decimal               @default(0.00) @db.Decimal(15,2)
   sub_total             Decimal               @default(0.00) @db.Decimal(15,2)
+  address               String                @db.VarChar(320) @default("")
   transaction           Transaction           @relation(fields: [transaction_id], references: [id])
-  livestock             Livestock            @relation(fields: [livestock_id], references: [id])
+  livestock             Livestock             @relation(fields: [livestock_id], references: [id])
 }
 
 model CareTransaction {
@@ -189,6 +190,7 @@ model CareTransaction {
   finish_date           DateTime                    @db.Timestamptz(6)
   one_day_price         Decimal                     @default(0.00) @db.Decimal(15,2)
   sub_total             Decimal                     @default(0.00) @db.Decimal(15,2)
+  address               String?                     @db.VarChar(320) @default("no used service delivery")
   transaction           Transaction                 @relation(fields: [transaction_id], references: [id])
   livestock             Livestock?                  @relation(fields: [livestock_id], references: [id])
   shelter               Shelter                     @relation(fields: [shelter_id], references: [id])

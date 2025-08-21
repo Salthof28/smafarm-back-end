@@ -31,6 +31,11 @@ export class TransactionsService implements TransactionsServiceItf {
     return transaction;
   };
 
+  async getAllCareByShelter(shelter_id: number): Promise<CareTransaction[]> {
+    const allTransaction: CareTransaction[] = await this.transactionsRepository.getAllCareByShelter(shelter_id);
+    return allTransaction;
+  }
+
   async transactionCare(transCare: TransactionCare): Promise<Transaction> {
     await this.checkShelterAvaibility(transCare.care);
     transCare.care = await this.countCare(transCare.care);

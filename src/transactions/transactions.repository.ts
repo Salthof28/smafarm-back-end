@@ -27,6 +27,22 @@ export class TransactionsRepository implements TransactionsRepositoryItf {
         }        
     };
 
+    async getAllCareByShelter(shelter_id: number): Promise<CareTransaction[]> {
+        try {
+            const allTransaction: CareTransaction[] = await this.prisma.careTransaction.findMany({
+                where: {
+                    shelter_id,
+                    transaction: {
+                        status_transaction: "CARE"
+                    }
+                }
+            });
+            return allTransaction
+        } catch (error) {
+            handlePrismaError(error);
+        }  
+    }
+
     async getAllCare(transaction_id: number, booking?: AllCareBooking): Promise<CareTransaction[] | undefined> {
         try {     
             const allCare: CareTransaction[] = await this.prisma.careTransaction.findMany({

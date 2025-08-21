@@ -9,7 +9,7 @@ import { CareTransaction, DetailBuyTransaction, DetailCareTransaction, Transacti
 
 export interface TransactionsRepositoryItf {
     getAll(query?: Condition): Promise<Transaction[] | undefined>;
-    // getAllBuy(transaction_id: number): Promise<DetailBuyTransaction[] | undefined>;
+    getAllCareByShelter(shelter_id: number): Promise<CareTransaction[]>;
     getAllCare(transaction_id?: number, booking?: AllCareBooking): Promise<CareTransaction[] | undefined>;
     getAllbooking(booking: AllBooking[]): Promise<OutAllBooking[]>
     getOne(id: number): Promise<OutFarmIdTransaction | undefined>;

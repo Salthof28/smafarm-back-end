@@ -10,6 +10,7 @@ export class Condition {
     high_price?: number;
     customer_id?: number; 
     farm_id?: number;
+    shelter_id?: number;
     transaction_status?: string;
     price_daily?;
     price?;

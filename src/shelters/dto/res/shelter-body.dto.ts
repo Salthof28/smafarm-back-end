@@ -5,7 +5,10 @@ import { CareTransactionBodyDto } from "src/transactions/dto/res/care-transactio
 export class ShelterBodyDto {
     @Expose()
     @Type(() => Number)
-    id: number
+    id: number;
+    @Expose()
+    @Type(() => Number)
+    farm_id: number;
     @Expose()
     @Type(() => String)
     name: string;

@@ -44,7 +44,15 @@ export class SheltersRepository implements SheltersRepositoryItf {
                     img_shelter: {
                         select: { url: true }
                     },
-                    
+                    care_give: {
+                        select: {
+                            id: true,
+                            name: true,
+                            price: true,
+                            required: true,
+                            unit: true
+                        }
+                    }                    
                 }
             });
             return allShelter;
