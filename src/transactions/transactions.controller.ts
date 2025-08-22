@@ -39,6 +39,22 @@ export class TransactionsController {
     }    
   };
 
+  @UseGuards(JwtAuthGuard)
+  @Get('history')
+  @TransformRes(TransactionBodyDto)
+  async getHistoryTransaction(@Request() request): Promise<Transaction[]> {
+    try {
+      const customer_id: number = request.user.id
+      const allTransactions: Transaction[] = await this.transactionsService.getAllTransaction({
+        customer_id,
+      });
+      return allTransactions;
+    } catch (error) {
+      if(error instanceof CustomExceptionGen) throw error;
+      throw new InternalServerErrorException()
+    }    
+  };
+
   @Get('care')
   @TransformRes(CareTransactionBodyDto)
   async getAllCareByShelter(@Query('shelter_id') shelter_id: number): Promise<CareTransaction[]> {

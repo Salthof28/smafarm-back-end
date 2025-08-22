@@ -51,7 +51,8 @@ export class FarmsRepository implements FarmsRepositoryItf {
                                 finish_date: true,
                                 total_livestock: true
                             }
-                        }
+                        },
+                        img_shelter: true
                     }
                 }}
             });

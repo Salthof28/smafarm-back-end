@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { Expose, Type } from "class-transformer";
 import { DetailCareTransactionBodyDto } from "./detail-care-transactiom-body.dto";
+import { ShelterBodyDto } from "src/shelters/dto/res/shelter-body.dto";
 
 export class CareTransactionBodyDto {
     @Expose()
@@ -36,4 +37,7 @@ export class CareTransactionBodyDto {
     @Expose()
     @Type(() => DetailCareTransactionBodyDto)
     detail_care: DetailCareTransactionBodyDto[];
+    @Expose()
+    @Type(() => ShelterBodyDto)
+    shelter: ShelterBodyDto;
 }

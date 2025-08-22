@@ -12,6 +12,9 @@ export class CreateCareTransactionDto {
     @IsNumber()
     total_livestock: number
     @IsOptional()
+    @IsString()
+    address: string
+    @IsOptional()
     @IsNumber()
     duration_care?: number
     @IsDateString()

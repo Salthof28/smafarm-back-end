@@ -19,7 +19,37 @@ export class TransactionsRepository implements TransactionsRepositoryItf {
                 if(query.transaction_status) where.OR.push({ transaction_status: query.transaction_status });
             }
             
-            const allTransaction: Transaction[] = await this.prisma.transaction.findMany({ where })
+            const allTransaction: Transaction[] = await this.prisma.transaction.findMany({ 
+                where,
+                include: {
+                    detail_buy: {
+                        include: {
+                            livestock: {
+                                select: {
+                                    name: true,
+                                    img_livestock: true
+                                }
+                            }
+                        }
+                    },
+                    care_transaction: {
+                        include: { 
+                            detail_care: {
+                                include: {
+                                    careGive: true
+                                }
+                            },
+                            shelter: {
+                                select: {
+                                    name: true,
+                                    img_shelter: true
+                                }
+                            }
+                         }
+                    },
+                    
+                }
+            })
             if(allTransaction.length < 1) return undefined;
             return allTransaction;
         } catch (error) {
@@ -149,6 +179,7 @@ export class TransactionsRepository implements TransactionsRepositoryItf {
                             livestock_id: transaction.livestock_id,
                             shelter_id: transaction.shelter_id,
                             total_livestock: transaction.total_livestock,
+                            address: transaction.address,
                             duration_care: transaction.duration_care,
                             start_date: new Date(transaction.start_date),
                             finish_date: new Date(transaction.finish_date),
@@ -182,6 +213,7 @@ export class TransactionsRepository implements TransactionsRepositoryItf {
                     detail_buy: {
                         create: create.buy.map((transaction) => ({
                         livestock_id: transaction.livestock_id,
+                        address: transaction.address,
                         total_livestock: transaction.total_livestock,
                         unit_price: transaction.unit_price,
                         sub_total: transaction.sub_total,
