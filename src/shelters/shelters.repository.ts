@@ -20,6 +20,7 @@ export class SheltersRepository implements SheltersRepositoryItf {
                 if (query.low_price) where.price.gte = query.low_price;
                 if (query.high_price) where.price.lte = query.high_price;
             }
+            if(query?.farm_id) where.farm_id = query.farm_id;
             // where or
             if(query?.name || query?.location){
                 where.OR = [];

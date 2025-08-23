@@ -48,6 +48,11 @@ export class UsersRepository implements UsersRepositoryItf {
             const user = await this.prisma.users.findUnique({
                 where: {
                     id
+                },
+                include: {
+                    farms: {
+                        select: { id: true }
+                    }
                 }
             });
             if(user === null) return undefined;
