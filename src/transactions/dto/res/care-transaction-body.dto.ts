@@ -12,6 +12,9 @@ export class CareTransactionBodyDto {
     transaction_id: number;
     @Expose()
     @Type(() => Number)
+    duration_care: number
+    @Expose()
+    @Type(() => Number)
     livestock_id: number;
     @Expose()
     @Type(() => Number)

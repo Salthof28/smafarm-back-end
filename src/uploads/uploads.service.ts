@@ -9,12 +9,15 @@ import { SheltersRepositoryItf } from '../shelters/shelters.repository.interface
 import { ShelterAccessException } from '../shelters/exception/shelter-access-exception';
 import { ShelterNotFoundException } from '../shelters/exception/shelter-not-found-exception';
 import { LivestocksRepositoryItf, OutRelationLivestock } from '../livestocks/livestocks.repository.interface';
+import { FarmsRepositoryItf } from '../farms/farms.repository.interface';
+import { FarmNotFoundException } from '../farms/exception/farm-not-found-exception';
+import { Farms } from '@prisma/client';
 
 @Injectable()
 export class UploadsService implements UploadsServiceItf {
   private supabase;
 
-  constructor(@Inject('SheltersRepositoryItf') private readonly sheltersRepository: SheltersRepositoryItf, @Inject('LivestocksRepositoryItf') private readonly livestocksRepository: LivestocksRepositoryItf) {
+  constructor(@Inject('SheltersRepositoryItf') private readonly sheltersRepository: SheltersRepositoryItf, @Inject('LivestocksRepositoryItf') private readonly livestocksRepository: LivestocksRepositoryItf, @Inject('FarmsRepositoryItf') private readonly farmsRepository: FarmsRepositoryItf) {
     this.supabase = createClient(
       process.env.SUPABASE_URL,
       process.env.SUPABASE_KEY,
@@ -42,18 +45,15 @@ export class UploadsService implements UploadsServiceItf {
     
     const publicUrl = publicUrlData.publicUrl;
     return { url: publicUrl };
-  }
+  };
 
-  async uploadImgShelter(upload: ImagesUploadShelter): Promise<{ url: string; }> {
+  async uploadImgFarmProfile(upload: ImageUpload): Promise<{ url: string; }> {
     if(!upload.file) throw new FileNotFoundException();
-    // check user is owner the shelter
-    const checkShelter: { farm: { user_id: number } } | undefined = await this.sheltersRepository.getRelationShelter(upload.shelterId);
-    if(!checkShelter) throw new ShelterNotFoundException();
-    if(checkShelter.farm.user_id !== upload.userId) throw new ShelterAccessException();
+    const checkShelter: Farms | undefined = await this.farmsRepository.getFarmByUserId(upload.userId);
+    if(!checkShelter) throw new FarmNotFoundException("you don't have farm");
     // name file and path
-    const originalName = upload.file.originalname;
-    const fileName = `${Date.now()}-${path.parse(originalName).name}.jpg`;
-    const filePath = `shelters/${upload.shelterId}/${fileName}`;
+    const fileName = 'farm.jpg';
+    const filePath = `farms/${checkShelter.id}/${fileName}`;
     // upload process
     const { error: uploadError } = await this.supabase.storage
       .from(process.env.SUPABASE_BUCKET)
@@ -70,6 +70,46 @@ export class UploadsService implements UploadsServiceItf {
     
     const publicUrl = publicUrlData.publicUrl;
     return { url: publicUrl };
+  }
+
+  async uploadImgShelter(upload: ImagesUploadShelter): Promise<{ url: string[]; }> {
+    if (!upload.files || upload.files.length === 0) {
+      throw new FileNotFoundException();
+    }
+
+    // Check user is owner of the shelter
+    const checkShelter: { farm: { user_id: number } } | undefined = await this.sheltersRepository.getRelationShelter(upload.shelterId);
+    if (!checkShelter) throw new ShelterNotFoundException();
+    if (checkShelter.farm.user_id !== upload.userId)
+      throw new ShelterAccessException();
+
+    const uploadedUrls: string[] = [];
+
+    for (const file of upload.files) {
+      // Generate name and path
+      const originalName = file.originalname;
+      const fileName = `${Date.now()}-${path.parse(originalName).name}.jpg`;
+      const filePath = `shelters/${upload.shelterId}/${fileName}`;
+
+      // Upload to Supabase bucket
+      const { error: uploadError } = await this.supabase.storage
+        .from(process.env.SUPABASE_BUCKET)
+        .upload(filePath, file.buffer, {
+          contentType: file.mimetype,
+          upsert: true,
+        });
+
+      if (uploadError) throw new UploadException(uploadError.message);
+
+      // Get public URL
+      const { data: publicUrlData } = this.supabase.storage
+        .from(process.env.SUPABASE_BUCKET)
+        .getPublicUrl(filePath);
+
+      uploadedUrls.push(publicUrlData.publicUrl);
+    }
+
+    return { url: uploadedUrls };
   }
 
   async deleteImgShelter(deleteImg: DelImagesBucketShelter): Promise<{ message: string, url: string }> {
