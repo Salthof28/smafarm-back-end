@@ -112,29 +112,36 @@ export class UploadsService implements UploadsServiceItf {
     return { url: uploadedUrls };
   }
 
-  async deleteImgShelter(deleteImg: DelImagesBucketShelter): Promise<{ message: string, url: string }> {
+  async deleteImgShelter(deleteImg: DelImagesBucketShelter): Promise<{ message: string, url: string[] }> {
     // check user is owner the shelter
-    const checkShelter: { farm: { user_id: number } } | undefined = await this.sheltersRepository.getRelationShelter(deleteImg.shelterId);
-    if(!checkShelter) throw new ShelterNotFoundException();
-    if(checkShelter.farm.user_id !== deleteImg.userId) throw new ShelterAccessException();
-    // name bucket
-    const bucketName = "smafarm"
-    // get pathname url, example -> "/storage/v1/object/public/smafarm/shelters/123/abc.jpg"
-    const parseUrl = new URL(deleteImg.url);
-    // split url become array string, example -> ["", "storage", "v1", "object", "public", "smafarm", "shelters", "123", "abc.jpg"]
-    const  partsUrl = parseUrl.pathname.split('/');
-    // search position index by bucketName
-    const bucketIndex = partsUrl.indexOf(bucketName);
-    // if not find bucket throw exception
-    if(bucketIndex === -1) throw new BucketNameException();
-    // get all path after bucketName, example -> ["shelters", "123", "abc.jpg"]
-    const rawPath = partsUrl.slice(bucketIndex + 1);
-    // decode raw path for convert special character like spaces
-    const decodedPath = rawPath.map(path => decodeURIComponent(path));
-    // combine raw path with slice for path
-    const filePath = decodedPath.join('/');
-    await this.supabase.storage.from(process.env.SUPABASE_BUCKET).remove([filePath]);
-    return { message: 'success deleted', url: deleteImg.url }
+    const checkShelter: { farm: { user_id: number } } | undefined =
+      await this.sheltersRepository.getRelationShelter(deleteImg.shelterId);
+    if (!checkShelter) throw new ShelterNotFoundException();
+    if (checkShelter.farm.user_id !== deleteImg.userId) throw new ShelterAccessException();
+
+    const bucketName = "smafarm";
+    const filePaths: string[] = [];
+
+    for (const url of deleteImg.url) {
+      const parseUrl = new URL(url);
+      const partsUrl = parseUrl.pathname.split('/');
+      const bucketIndex = partsUrl.indexOf(bucketName);
+      if (bucketIndex === -1) throw new BucketNameException();
+
+      const rawPath = partsUrl.slice(bucketIndex + 1);
+      const decodedPath = rawPath.map(path => decodeURIComponent(path));
+      const filePath = decodedPath.join('/');
+      filePaths.push(filePath);
+    }
+
+    // delete all files at onces
+    const { error } = await this.supabase.storage
+      .from(process.env.SUPABASE_BUCKET)
+      .remove(filePaths);
+
+    if (error) throw new UploadException(error.message);
+
+    return { message: 'success deleted', url: deleteImg.url };
   }
 
   async uploadImgLivestock(upload: ImagesUploadLivestock): Promise<{ url: string; }> {

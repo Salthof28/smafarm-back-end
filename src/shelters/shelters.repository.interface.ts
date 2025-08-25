@@ -20,6 +20,7 @@ export interface SheltersRepositoryItf {
     updatedCare(upCare: UpdateCare): Promise<CareGive>;
     deletedCare(id: number): Promise<CareGive>;
     getAllAccomodateShelter(id_shelter: number[]): Promise<OutAccomodate[]>;
+    updateShelterPros(allUpdate: AllUpdate)
 }
 
 export interface UpdateShelter {
@@ -38,6 +39,16 @@ export interface NewShelter {
 export interface NewImageUrl {
     shelter_id: number,
     body: string[]
+}
+
+export interface AllUpdate {
+    shelter_id: number,
+    shelter?: UpdateShelterDto,
+    uploadImage?: string[],
+    deleteImage?: number[],
+    newCare?: CreateCareDto[],
+    updateCare?: UpdateCareDto[],
+    deleteCare?: number[]
 }
 
 export type OutDetailShelter = (Shelter & { img_shelter: { url: string }[], farm: { user_id: number }, care_give: CareGive[] })

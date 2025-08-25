@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { NewImageUrl, NewShelter, OutAccomodate, OutCareShelter, OutDetailShelter, SheltersRepositoryItf, UpdateCare, UpdateShelter } from "./shelters.repository.interface";
+import { AllUpdate, NewImageUrl, NewShelter, OutAccomodate, OutCareShelter, OutDetailShelter, SheltersRepositoryItf, UpdateCare, UpdateShelter } from "./shelters.repository.interface";
 import { PrismaService } from "prisma/prisma.service";
 import { handlePrismaError } from "../global/utils/prisma.error.util";
 import { Condition } from "../global/entities/condition-entity";
@@ -40,10 +40,16 @@ export class SheltersRepository implements SheltersRepositoryItf {
                 where,
                 include: { 
                     category: {
-                        select: { name: true }
+                        select: { 
+                            id: true,
+                            name: true
+                        }
                     },
                     img_shelter: {
-                        select: { url: true }
+                        select: {
+                            id: true,
+                            url: true
+                        }
                     },
                     care_give: {
                         select: {
@@ -276,5 +282,100 @@ export class SheltersRepository implements SheltersRepositoryItf {
         } catch (error) {
             handlePrismaError(error);
         }    
+    }
+
+    async updateShelterPros(allUpdate: AllUpdate) {
+    try {
+            const updateProses = await this.prisma.$transaction(async (tx) => {
+                if(allUpdate.shelter) {
+                    const shelter = await this.prisma.shelter.update({
+                        where: {
+                            id: allUpdate.shelter_id
+                        },
+                        data: {
+                            name: allUpdate.shelter.name,
+                            category_id: allUpdate.shelter.category_id,
+                            location: allUpdate.shelter.location,
+                            accomodate: allUpdate.shelter.accomodate,
+                            description: allUpdate.shelter.description,
+                            price_daily: allUpdate.shelter.price_daily,
+                            updated_at: new Date()
+                        }
+                    });
+                };
+                // upload new image
+                if(allUpdate.uploadImage) {
+                    await this.prisma.imgShelter.createMany({
+                        data: allUpdate.uploadImage.map(imgUrl => ({
+                            shelter_id: allUpdate.shelter_id,
+                            url: imgUrl
+                        }))
+                    });
+                }; 
+
+                // delete image
+                if(allUpdate.deleteImage) {
+                    await this.prisma.imgShelter.deleteMany({
+                        where: {
+                            id: {
+                                in: allUpdate.deleteImage.map(id => id)
+                            }
+                        }
+                    });
+                };
+                
+                // new Care
+                if(allUpdate.newCare) {
+                    await this.prisma.careGive.createMany({
+                        data: allUpdate.newCare.map(care => ({
+                            shelter_id: allUpdate.shelter_id,
+                            name: care.name,
+                            price: care.price,
+                            unit: care.unit,
+                            required: care.required
+                        }))
+                    })
+                }
+
+                // update care
+                if(allUpdate.updateCare) {
+                    for (const care of allUpdate.updateCare){
+                        await this.prisma.careGive.update({
+                            where: { id: care.id },
+                            data: {
+                                // shelter_id: care.shelter_id,
+                                name: care.name,
+                                price: care.price,
+                                unit: care.unit,
+                                required: care.required
+                            }
+                        });
+                    }
+                }
+                // delete care
+                if(allUpdate.deleteCare) {
+                    const ids = allUpdate.deleteCare.map(id => Number(id));
+                    await this.prisma.careGive.deleteMany({
+                        where: {
+                            id: {
+                                in: ids
+                            }
+                        }
+                    });
+                }
+                return {
+                    success: true,
+                    updatedFields: Object.keys(allUpdate.shelter || {}),
+                    newImages: allUpdate.uploadImage?.length || 0,
+                    deletedImages: allUpdate.deleteImage?.length || 0,
+                    newCareCount: allUpdate.newCare?.length || 0,
+                    updatedCareCount: allUpdate.updateCare?.length || 0,
+                    deletedCareCount: allUpdate.deleteCare?.length || 0
+                }
+            });
+            return updateProses;
+        } catch (error) {
+            handlePrismaError(error);
+        }
     }
 }

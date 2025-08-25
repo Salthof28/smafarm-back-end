@@ -1,8 +1,9 @@
-import { IsNumber, IsString } from "class-validator";
+import { IsArray, IsNumber, IsString } from "class-validator";
 
 export class DeleteUrlDto {
     @IsNumber()
     id: number
-    @IsString()
-    url: string
+    @IsArray()
+    @IsString({ each: true })
+    url: string[]
 }

@@ -63,7 +63,7 @@ export class UploadsController {
   }
 
   @Delete('/shelter/deleted')
-  async deleteImgShelter(@Request() request, @Body() body: DeleteUrlDto): Promise<{ message: string, url: string }> {
+  async deleteImgShelter(@Request() request, @Body() body: DeleteUrlDto): Promise<{ message: string, url: string[] }> {
     try{
       const deleteImg = await this.uploadsService.deleteImgShelter({
         userId: request.user.id,
@@ -93,18 +93,18 @@ export class UploadsController {
     }
   }
 
-  @Delete('/livestock/deleted')
-  async deleteImgLivestock(@Request() request, @Body() body: DeleteUrlDto): Promise<{ message: string, url: string }> {
-    try{
-      const deleteImg = await this.uploadsService.deleteImgLivestock({
-        userId: request.user.id,
-        livestockId: body.id,
-        url: body.url
-      });
-      return deleteImg
-    } catch (error) {
-      if(error instanceof CustomExceptionGen) throw error;
-      throw new InternalServerErrorException()
-    }
-  }
+  // @Delete('/livestock/deleted')
+  // async deleteImgLivestock(@Request() request, @Body() body: DeleteUrlDto): Promise<{ message: string, url: string }> {
+  //   try{
+  //     const deleteImg = await this.uploadsService.deleteImgLivestock({
+  //       userId: request.user.id,
+  //       livestockId: body.id,
+  //       url: body.url
+  //     });
+  //     return deleteImg
+  //   } catch (error) {
+  //     if(error instanceof CustomExceptionGen) throw error;
+  //     throw new InternalServerErrorException()
+  //   }
+  // }
 }

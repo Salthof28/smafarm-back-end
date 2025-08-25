@@ -13,6 +13,7 @@ import { JwtAuthGuard } from '../global/guards/jwt-auth.guard';
 import { TransformRes } from '../global/interceptors/transform-body-res.interceptor';
 import { ShelterBodyDto } from './dto/res/shelter-body.dto';
 import { CareBodyDto } from './dto/res/care-body.dto';
+import { AllUpdateFeatShelterDto } from './dto/req/update-feat-shelter.dto';
 
 @Controller('shelters')
 export class SheltersController {
@@ -143,15 +144,20 @@ export class SheltersController {
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
   @TransformRes(ShelterBodyDto)
-  async updateShelter(@Request() request, @Param('id', ParseIntPipe) id: number, @Body() body: UpdateShelterDto): Promise<Shelter> {
+  async updateShelter(@Request() request, @Param('id', ParseIntPipe) id: number, @Body() body: AllUpdateFeatShelterDto) {
     try {
       const user_id = request.user.id;
-      const upShelter: Shelter = await this.sheltersService.updatedShelter({
-        id,
+      const updateShelter = await this.sheltersService.updateShelterPros({
         user_id,
-        body
+        shelter_id: id,
+        shelter: body.shelter,
+        uploadImage: body.uploadImage,
+        deleteImage: body.deleteImage,
+        newCare: body.newCare,
+        updateCare: body.updateCare,
+        deleteCare: body.deleteCare
       });
-      return upShelter;
+      return updateShelter
     } catch (error) {
       if(error instanceof CustomExceptionGen) throw error;
       throw new InternalServerErrorException()

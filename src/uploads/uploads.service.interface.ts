@@ -2,7 +2,7 @@ export interface UploadsServiceItf {
     uploadImgProfile(upload: ImageUpload): Promise<{ url: string }>;
     uploadImgFarmProfile(upload: ImageUpload): Promise<{ url: string }>;
     uploadImgShelter(upload: ImagesUploadShelter): Promise<{ url: string[] }>;
-    deleteImgShelter(deleteImg: DelImagesBucketShelter): Promise<{ message: string, url: string }>;
+    deleteImgShelter(deleteImg: DelImagesBucketShelter): Promise<{ message: string, url: string[] }>;
     uploadImgLivestock(upload: ImagesUploadLivestock): Promise<{ url: string; }>
     deleteImgLivestock(deleteImg: DelImagesBucketLivestock): Promise<{ message: string, url: string }>;
 }
@@ -22,7 +22,7 @@ export interface ImagesUploadShelter {
 export interface DelImagesBucketShelter {
     userId: number,
     shelterId: number,
-    url: string
+    url: string[]
 }
 
 export interface ImagesUploadLivestock {

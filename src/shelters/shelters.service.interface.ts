@@ -2,7 +2,7 @@ import { CareGive, Shelter } from "@prisma/client";
 import { Condition } from "../global/entities/condition-entity";
 import { CreateCareDto } from "./dto/req/create-care.dto";
 import { CreateShelterDto } from "./dto/req/create-shelter.dto";
-import { UpdateCare, UpdateShelter } from "./shelters.repository.interface";
+import { AllUpdate, UpdateCare, UpdateShelter } from "./shelters.repository.interface";
 import { UpdateShelterDto } from "./dto/req/update-shelter.dto";
 import { UpdateCareDto } from "./dto/req/update-care.dto";
 
@@ -11,11 +11,12 @@ export interface SheltersServiceItf {
     getShelter(id: number): Promise<Shelter>;
     getAllCares(): Promise<CareGive[]>;
     createdShelter(newShel: ServiceCreateShelter): Promise<Shelter>;
-    updatedShelter(upShel: ServiceUpdateShelter): Promise<Shelter>;
+    // updatedShelter(upShel: ServiceUpdateShelter): Promise<Shelter>;
     deletedShelter(shelter: DeleteShelter): Promise<Shelter>;
     createdCare(care: ServiceCreateCare): Promise<CareGive>;
     updatedCare(upCare: ServiceUpdateCare): Promise<CareGive>;
     deletedCare(care: DeleteCare): Promise<CareGive>;
+    updateShelterPros(allUpdate: AllUpdateShelter)
 }
 
 export interface ServiceCreateShelter {
@@ -47,4 +48,14 @@ export interface DeleteShelter {
 export interface DeleteCare {
     user_id: number,
     id: number
+}
+export interface AllUpdateShelter {
+    user_id: number
+    shelter_id: number,
+    shelter?: UpdateShelterDto,
+    uploadImage?: string[],
+    deleteImage?: number[],
+    newCare?: CreateCareDto[],
+    updateCare?: UpdateCareDto[],
+    deleteCare?: number[]
 }
