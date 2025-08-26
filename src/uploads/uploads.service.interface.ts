@@ -3,8 +3,8 @@ export interface UploadsServiceItf {
     uploadImgFarmProfile(upload: ImageUpload): Promise<{ url: string }>;
     uploadImgShelter(upload: ImagesUploadShelter): Promise<{ url: string[] }>;
     deleteImgShelter(deleteImg: DelImagesBucketShelter): Promise<{ message: string, url: string[] }>;
-    uploadImgLivestock(upload: ImagesUploadLivestock): Promise<{ url: string; }>
-    deleteImgLivestock(deleteImg: DelImagesBucketLivestock): Promise<{ message: string, url: string }>;
+    uploadImgLivestock(upload: ImagesUploadLivestock): Promise<{ url: string[] }>
+    deleteImgLivestock(deleteImg: DelImagesBucketLivestock): Promise<{ message: string, url: string[] }>;
 }
 
 export interface ImageUpload {
@@ -28,12 +28,12 @@ export interface DelImagesBucketShelter {
 export interface ImagesUploadLivestock {
     userId: number,
     livestockId: number,
-    file: Express.Multer.File
+    files: Express.Multer.File[]
 }
 
 export interface DelImagesBucketLivestock {
     userId: number,
     livestockId: number,
-    url: string
+    url: string[]
 }
 

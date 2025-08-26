@@ -13,6 +13,7 @@ export interface LivestocksRepositoryItf {
     createManyImg(allUrl: NewImgUrlLive): Promise<number>;
     deleteManyImg(allUrl: string[]): Promise<number>;
     getAllLiveTransaction(id: number[]): Promise<Livestock[] | undefined>;
+    updateLivestockPros(updateDat: UpdateDatLivestock): Promise<Livestock>;
 }
 
 export type OutDetailLivestock = (Livestock & { img_livestock: { url:string }[], farm: { user_id: number } });
@@ -32,4 +33,11 @@ export interface UpdateLivestock {
 export interface NewImgUrlLive {
     livestock_id: number,
     body: string[]
+}
+
+export interface UpdateDatLivestock {
+    livestock_id: number;
+    livestock?: UpdateLivestockDto;
+    uploadImage?: string[];
+    deleteImage?: number[];
 }

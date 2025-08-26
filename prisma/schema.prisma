@@ -27,9 +27,11 @@ enum StatusUser {
 
 enum StatusTransaction {
   WAITING
+  DECLINE
   SENDING
   CARE
   FINISH
+  REVIEWED
 }
 
 enum UnitCare {
@@ -175,7 +177,7 @@ model DetailBuyTransaction {
   unit_price            Decimal               @default(0.00) @db.Decimal(15,2)
   sub_total             Decimal               @default(0.00) @db.Decimal(15,2)
   address               String                @db.VarChar(320) @default("")
-  transaction           Transaction           @relation(fields: [transaction_id], references: [id])
+  transaction           Transaction           @relation(fields: [transaction_id], references: [id], onDelete: Cascade)
   livestock             Livestock             @relation(fields: [livestock_id], references: [id])
 }
 
@@ -191,7 +193,7 @@ model CareTransaction {
   one_day_price         Decimal                     @default(0.00) @db.Decimal(15,2)
   sub_total             Decimal                     @default(0.00) @db.Decimal(15,2)
   address               String?                     @db.VarChar(320) @default("no used service delivery")
-  transaction           Transaction                 @relation(fields: [transaction_id], references: [id])
+  transaction           Transaction                 @relation(fields: [transaction_id], references: [id], onDelete: Cascade)
   livestock             Livestock?                  @relation(fields: [livestock_id], references: [id])
   shelter               Shelter                     @relation(fields: [shelter_id], references: [id])
   detail_care           DetailCareTransaction[]
@@ -200,7 +202,7 @@ model CareTransaction {
 model DetailCareTransaction {
   id                    Int                   @id @default(autoincrement())
   careTransaction_id    Int
-  careGive_id           Int
-  careTransaction       CareTransaction       @relation(fields: [careTransaction_id], references: [id])
-  careGive              CareGive              @relation(fields: [careGive_id], references: [id])
+  careGive_id           Int?
+  careTransaction       CareTransaction       @relation(fields: [careTransaction_id], references: [id], onDelete: Cascade)
+  careGive              CareGive?             @relation(fields: [careGive_id], references: [id], onDelete: SetNull)
 }

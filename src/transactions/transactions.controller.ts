@@ -149,6 +149,19 @@ export class TransactionsController {
   };
 
   @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  @TransformRes(TransactionBodyDto)
+  async dropTransaction (@Param('id', ParseIntPipe) id: number): Promise<Transaction> {
+    try {
+      const drop: Transaction = await this.transactionsService.dropTransaction(id);
+      return drop;
+    } catch (error) {
+      if(error instanceof CustomExceptionGen) throw error;
+      throw new InternalServerErrorException()
+    }
+  };
+
+  @UseGuards(JwtAuthGuard)
   @Patch('transactionbuy/:id')
   @TransformRes(TransactionBodyDto)
   async updateBuyTransaction(@Param('id', ParseIntPipe) id: number, @Request() request, @Body() body: UpdateDetailBuyDto): Promise<Transaction> {

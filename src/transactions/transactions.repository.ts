@@ -3,7 +3,7 @@ import { AllBooking, AllCareBooking, CreateBuyCareTransaction, CreateTransaction
 import { PrismaService } from 'prisma/prisma.service';
 import { Condition } from '../global/entities/condition-entity';
 import { handlePrismaError } from '../global/utils/prisma.error.util';
-import { CareTransaction, DetailBuyTransaction, Transaction } from '@prisma/client';
+import { CareTransaction, DetailBuyTransaction, StatusTransaction, Transaction } from '@prisma/client';
 
 @Injectable()
 export class TransactionsRepository implements TransactionsRepositoryItf {
@@ -47,7 +47,9 @@ export class TransactionsRepository implements TransactionsRepositoryItf {
                             }
                          }
                     },
-                    
+                },
+                orderBy: {
+                    date_transaction: 'desc'
                 }
             })
             if(allTransaction.length < 1) return undefined;
@@ -65,7 +67,12 @@ export class TransactionsRepository implements TransactionsRepositoryItf {
                     transaction: {
                         status_transaction: "CARE"
                     }
-                }
+                },
+                include: { 
+                    transaction: {
+                        select: { date_transaction: true }
+                    }
+                 }
             });
             return allTransaction
         } catch (error) {
@@ -73,18 +80,30 @@ export class TransactionsRepository implements TransactionsRepositoryItf {
         }  
     }
 
-    async getAllCare(transaction_id: number, booking?: AllCareBooking): Promise<CareTransaction[] | undefined> {
-        try {     
+    async getAllCare(transaction_id?: number, booking?: AllCareBooking, status?: string): Promise<CareTransaction[]> {
+        try {
             const allCare: CareTransaction[] = await this.prisma.careTransaction.findMany({
                 where: {
-                    transaction_id
-                }
-            })
-            if(allCare.length < 1) return undefined;
+                    ...(transaction_id && { transaction_id }),
+                    ...(booking && {
+                        shelter_id: booking.shelter_id,
+                        start_date: {  lte: booking.finish },
+                        finish_date: { gte: booking.start },
+                    }),
+                    ...(status && {
+                        transaction: { 
+                            is: { status_transaction: status as StatusTransaction },
+                        }
+                    })
+                },
+                // include: {
+                //     transaction: true
+                // }
+            });
             return allCare;
         } catch (error) {
             handlePrismaError(error);
-        }   
+        }
     }
 
     async getAllbooking(booking: AllBooking[]): Promise<OutAllBooking[]> {
@@ -387,5 +406,18 @@ export class TransactionsRepository implements TransactionsRepositoryItf {
         } catch (error) {
             handlePrismaError(error);
         }          
+    }
+
+    async dropTransaction(id: number): Promise<Transaction> {
+        try {
+            const dropTransaction = await this.prisma.transaction.delete({
+                where: {
+                    id
+                }
+            });
+            return dropTransaction;
+        } catch (error) {
+            handlePrismaError(error);
+        }    
     }
 }

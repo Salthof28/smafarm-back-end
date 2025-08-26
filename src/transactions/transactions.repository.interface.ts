@@ -10,7 +10,7 @@ import { CareTransaction, DetailBuyTransaction, DetailCareTransaction, Transacti
 export interface TransactionsRepositoryItf {
     getAll(query?: Condition): Promise<Transaction[] | undefined>;
     getAllCareByShelter(shelter_id: number): Promise<CareTransaction[]>;
-    getAllCare(transaction_id?: number, booking?: AllCareBooking): Promise<CareTransaction[] | undefined>;
+    getAllCare(transaction_id?: number, booking?: AllCareBooking, status?: string): Promise<CareTransaction[]>;
     getAllbooking(booking: AllBooking[]): Promise<OutAllBooking[]>
     getOne(id: number): Promise<OutFarmIdTransaction | undefined>;
     getOneBuy(id: number): Promise<OutAccessBuy | undefined>;
@@ -21,12 +21,13 @@ export interface TransactionsRepositoryItf {
     updatedCareTransaction(careTrans: UpdateCareTransaction): Promise<CareTransaction>;
     createdBuyCareTransaction(create: CreateBuyCareTransaction): Promise<Transaction>;
     updatedDetailBuy(upBuy: UpdateDetailBuy): Promise<DetailBuyTransaction>;
+    dropTransaction(id: number): Promise<Transaction>;
 }
 
 export interface AllCareBooking {
     shelter_id: number, 
     start: Date, 
-    finish: Date
+    finish: Date,
 }
 
 export interface AllBooking {

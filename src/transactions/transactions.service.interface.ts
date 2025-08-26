@@ -22,7 +22,8 @@ export interface TransactionsServiceItf {
     updatedBuy(updated: UpdateBuy): Promise<Transaction>;
     resheduleCare(updated: UpdateCare): Promise<Transaction>;
     countUpdateTransaction(count: UpdateCountTransaction): Promise<Decimal>;
-    checkShelterAvaibility(careList: CreateCareTransactionDto[]): Promise<void>
+    checkShelterAvaibility(careList: CreateCareTransactionDto[]): Promise<void>;
+    dropTransaction(id: number): Promise<Transaction>;
 }
 
 export interface TransactionCare {

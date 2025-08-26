@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { DeleteLivestock, LivestocksServiceItf, ServiceCreateLivestock, ServiceUpdateLivestock } from './livestocks.service.interface';
+import { DeleteLivestock, LivestocksServiceItf, ServiceCreateLivestock, ServiceUpdateLivestock, UpdateDatLivestockService } from './livestocks.service.interface';
 import { LivestocksRepositoryItf, OutDetailLivestock, OutRelationLivestock } from './livestocks.repository.interface';
 import { Farms, Livestock } from '@prisma/client';
 import { Condition } from '../global/entities/condition-entity';
@@ -38,26 +38,26 @@ export class LivestocksService implements LivestocksServiceItf {
     return newLivestock;
   }
 
-  async updatedLivestock(upLive: ServiceUpdateLivestock): Promise<Livestock> {
-    const findLivestock: OutDetailLivestock | undefined = await this.livestocksRepository.getOne(upLive.id);
-    if(!findLivestock) throw new LivestockNotFoundException();
-    if(findLivestock.farm.user_id !== upLive.user_id) throw new LivestockAccessException();
+  // async updatedLivestock(upLive: ServiceUpdateLivestock): Promise<Livestock> {
+  //   const findLivestock: OutDetailLivestock | undefined = await this.livestocksRepository.getOne(upLive.id);
+  //   if(!findLivestock) throw new LivestockNotFoundException();
+  //   if(findLivestock.farm.user_id !== upLive.user_id) throw new LivestockAccessException();
 
-    if(upLive.body.img_livestock){
-      const oldImg: string[] = findLivestock.img_livestock.map(img => img.url);
-      const imgInputRaw: string[] = upLive.body.img_livestock;
+  //   if(upLive.body.img_livestock){
+  //     const oldImg: string[] = findLivestock.img_livestock.map(img => img.url);
+  //     const imgInputRaw: string[] = upLive.body.img_livestock;
 
-      const newImg: string[] = imgInputRaw.filter(url => !oldImg.includes(url));
-      const deleteImg: string[] = oldImg.filter(url => !imgInputRaw.includes(url));
-      if(deleteImg.length > 0) await this.livestocksRepository.deleteManyImg(deleteImg);
-      if(newImg.length > 0) await this.livestocksRepository.createManyImg({
-        livestock_id: upLive.id,
-        body: newImg
-      });
-    };
-    const updateLive: Livestock = await this.livestocksRepository.updated(upLive);
-    return updateLive;
-  }
+  //     const newImg: string[] = imgInputRaw.filter(url => !oldImg.includes(url));
+  //     const deleteImg: string[] = oldImg.filter(url => !imgInputRaw.includes(url));
+  //     if(deleteImg.length > 0) await this.livestocksRepository.deleteManyImg(deleteImg);
+  //     if(newImg.length > 0) await this.livestocksRepository.createManyImg({
+  //       livestock_id: upLive.id,
+  //       body: newImg
+  //     });
+  //   };
+  //   const updateLive: Livestock = await this.livestocksRepository.updated(upLive);
+  //   return updateLive;
+  // }
 
   async deletedLivestock(livestock: DeleteLivestock): Promise<Livestock> {
     const checkAccess: OutRelationLivestock | undefined = await this.livestocksRepository.getRelationLivestock(livestock.id);
@@ -66,5 +66,13 @@ export class LivestocksService implements LivestocksServiceItf {
 
     const deleteLivestock: Livestock = await this.livestocksRepository.deleted(livestock.id);
     return deleteLivestock;
+  }
+
+  async updateLivestockPros(updateDat: UpdateDatLivestockService): Promise<Livestock> {
+    const findLivestock: OutDetailLivestock | undefined = await this.livestocksRepository.getOne(updateDat.livestock_id);
+    if(!findLivestock) throw new LivestockNotFoundException();
+    if(findLivestock.farm.user_id !== updateDat.user_id) throw new LivestockAccessException();
+    const updateLivestock = await this.livestocksRepository.updateLivestockPros(updateDat);
+    return updateLivestock;
   }
 }

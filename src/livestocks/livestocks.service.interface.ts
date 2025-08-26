@@ -7,8 +7,9 @@ export interface LivestocksServiceItf {
     getAllLivestock(query?: Condition): Promise<Livestock[]>;
     getOneLivestock(id: number): Promise<Livestock>;
     createdLivestock(newLive: ServiceCreateLivestock): Promise<Livestock>;
-    updatedLivestock(upLive: ServiceUpdateLivestock): Promise<Livestock>;
-    deletedLivestock(livestock: DeleteLivestock): Promise<Livestock>; 
+    // updatedLivestock(upLive: ServiceUpdateLivestock): Promise<Livestock>;
+    deletedLivestock(livestock: DeleteLivestock): Promise<Livestock>;
+    updateLivestockPros(updateDat: UpdateDatLivestockService): Promise<Livestock>; 
 }
 
 export interface ServiceCreateLivestock {
@@ -25,4 +26,12 @@ export interface ServiceUpdateLivestock {
 export interface DeleteLivestock {
     user_id: number,
     id: number
+}
+
+export interface UpdateDatLivestockService {
+    user_id: number
+    livestock_id: number;
+    livestock?: UpdateLivestockDto;
+    uploadImage?: string[];
+    deleteImage?: number[];
 }

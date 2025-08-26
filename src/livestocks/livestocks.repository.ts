@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { LivestocksRepositoryItf, NewImgUrlLive, NewLivestock, OutDetailLivestock, OutRelationLivestock, UpdateLivestock } from "./livestocks.repository.interface";
+import { LivestocksRepositoryItf, NewImgUrlLive, NewLivestock, OutDetailLivestock, OutRelationLivestock, UpdateDatLivestock, UpdateLivestock } from "./livestocks.repository.interface";
 import { PrismaService } from "prisma/prisma.service";
 import { Livestock } from "@prisma/client";
 import { Condition } from "../global/entities/condition-entity";
@@ -19,6 +19,7 @@ export class LivestocksRepository implements LivestocksRepositoryItf {
                 if (query.low_price) where.price.gte = query.low_price;
                 if (query.high_price) where.price.lte = query.high_price;
             }
+            if(query?.farm_id) where.farm_id = query.farm_id;
             // where or
             if(query?.name || query?.location){
                 where.OR = [];
@@ -38,10 +39,16 @@ export class LivestocksRepository implements LivestocksRepositoryItf {
                 where,
                 include: { 
                     category: {
-                        select: { name: true }
+                        select: { 
+                            id: true,
+                            name: true
+                        }
                     },
                     img_livestock: {
-                        select: { url: true }
+                        select: { 
+                            id: true,
+                            url: true 
+                        }
                     },
                     
                 }
@@ -175,6 +182,70 @@ export class LivestocksRepository implements LivestocksRepositoryItf {
         } catch (error) {
             handlePrismaError(error);
         }          
+    }
+
+    async updateLivestockPros(updateDat: UpdateDatLivestock): Promise<Livestock> {
+        try {
+            const updateProses = await this.prisma.$transaction(async (tx) => {
+                let livestock;
+                if(updateDat.livestock) {
+                    livestock = await this.prisma.livestock.update({
+                        where: {
+                            id: updateDat.livestock_id
+                        },
+                        data: {
+                            category_id: updateDat.livestock.category_id,
+                            name: updateDat.livestock.name,
+                            location: updateDat.livestock.location,
+                            age: updateDat.livestock.age,
+                            price: updateDat.livestock.price,
+                            stock: updateDat.livestock.stock,
+                            description: updateDat.livestock.description,
+                            
+                            updated_at: new Date()
+                        },
+                        include: {
+                            img_livestock: {
+                                select: { 
+                                    id: true,
+                                    url: true 
+                                }
+                            },
+                            category: {
+                                select: { 
+                                    id: true,
+                                    name: true
+                                }
+                            },
+                        }
+                    });
+                };
+                // upload new image
+                if(updateDat.uploadImage) {
+                    await this.prisma.imgLivestocks.createMany({
+                        data: updateDat.uploadImage.map(imgUrl => ({
+                            livestock_id: updateDat.livestock_id,
+                            url: imgUrl
+                        }))
+                    });
+                }; 
+
+                // delete image
+                if(updateDat.deleteImage) {
+                    await this.prisma.imgLivestocks.deleteMany({
+                        where: {
+                            id: {
+                                in: updateDat.deleteImage.map(id => id)
+                            }
+                        }
+                    });
+                };
+                return livestock;
+            });
+            return updateProses;
+        } catch (error) {
+            handlePrismaError(error);
+        }
     }
     
 }

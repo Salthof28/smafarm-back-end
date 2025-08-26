@@ -144,57 +144,97 @@ export class UploadsService implements UploadsServiceItf {
     return { message: 'success deleted', url: deleteImg.url };
   }
 
-  async uploadImgLivestock(upload: ImagesUploadLivestock): Promise<{ url: string; }> {
-    if(!upload.file) throw new FileNotFoundException();
-    // check user is owner the shelter
-    const checkLivestock: OutRelationLivestock | undefined = await this.livestocksRepository.getRelationLivestock(upload.livestockId);
-    if(!checkLivestock) throw new ShelterNotFoundException();
-    if(checkLivestock.farm.user_id !== upload.userId) throw new ShelterAccessException();
-    // name file and path
-    const originalName = upload.file.originalname;
-    const fileName = `${Date.now()}-${path.parse(originalName).name}.jpg`;
-    const filePath = `livestocks/${upload.livestockId}/${fileName}`;
-    // upload process
-    const { error: uploadError } = await this.supabase.storage
-      .from(process.env.SUPABASE_BUCKET)
-      .upload(filePath, upload.file.buffer, {
-        contentType: upload.file.mimetype,
-        upsert: true
-      });
-    
-    if(uploadError) throw new UploadException(uploadError.message);
+  async uploadImgLivestock(upload: ImagesUploadLivestock): Promise<{ url: string[] }> {
+    if (!upload.files || upload.files.length === 0) {
+      throw new FileNotFoundException();
+    }
 
-    const { data: publicUrlData } = this.supabase.storage
-      .from(process.env.SUPABASE_BUCKET)
-      .getPublicUrl(filePath);
-    
-    const publicUrl = publicUrlData.publicUrl;
-    return { url: publicUrl };
+    // Check user is owner of the shelter
+    const checkLivestock: OutRelationLivestock | undefined = await this.livestocksRepository.getRelationLivestock(upload.livestockId);
+    if (!checkLivestock) throw new ShelterNotFoundException();
+    if (checkLivestock.farm.user_id !== upload.userId)
+      throw new ShelterAccessException();
+
+    const uploadedUrls: string[] = [];
+
+    for (const file of upload.files) {
+      // Generate name and path
+      const originalName = file.originalname;
+      const fileName = `${Date.now()}-${path.parse(originalName).name}.jpg`;
+      const filePath = `livestocks/${upload.livestockId}/${fileName}`;
+
+      // Upload to Supabase bucket
+      const { error: uploadError } = await this.supabase.storage
+        .from(process.env.SUPABASE_BUCKET)
+        .upload(filePath, file.buffer, {
+          contentType: file.mimetype,
+          upsert: true,
+        });
+
+      if (uploadError) throw new UploadException(uploadError.message);
+
+      // Get public URL
+      const { data: publicUrlData } = this.supabase.storage
+        .from(process.env.SUPABASE_BUCKET)
+        .getPublicUrl(filePath);
+
+      uploadedUrls.push(publicUrlData.publicUrl);
+    }
+
+    return { url: uploadedUrls };
   }
 
-  async deleteImgLivestock(deleteImg: DelImagesBucketLivestock): Promise<{ message: string; url: string; }> {
-    // check user is owner the shelter
+  async deleteImgLivestock(deleteImg: DelImagesBucketLivestock): Promise<{ message: string, url: string[] }> {
+    // // check user is owner the shelter
+    // const checkLivestock: OutRelationLivestock | undefined = await this.livestocksRepository.getRelationLivestock(deleteImg.livestockId);
+    // if(!checkLivestock) throw new ShelterNotFoundException();
+    // if(checkLivestock.farm.user_id !== deleteImg.userId) throw new ShelterAccessException();
+    // // name bucket
+    // const bucketName = "smafarm"
+    // // get pathname url, example -> "/storage/v1/object/public/smafarm/shelters/123/abc.jpg"
+    // const parseUrl = new URL(deleteImg.url);
+    // // split url become array string, example -> ["", "storage", "v1", "object", "public", "smafarm", "shelters", "123", "abc.jpg"]
+    // const  partsUrl = parseUrl.pathname.split('/');
+    // // search position index by bucketName
+    // const bucketIndex = partsUrl.indexOf(bucketName);
+    // // if not find bucket throw exception
+    // if(bucketIndex === -1) throw new BucketNameException();
+    // // get all path after bucketName, example -> ["shelters", "123", "abc.jpg"]
+    // const rawPath = partsUrl.slice(bucketIndex + 1);
+    // // decode raw path for convert special character like spaces
+    // const decodedPath = rawPath.map(path => decodeURIComponent(path));
+    // // combine raw path with slice for path
+    // const filePath = decodedPath.join('/');
+    // await this.supabase.storage.from(process.env.SUPABASE_BUCKET).remove([filePath]);
+    // return { message: 'success deleted', url: deleteImg.url }    
+        // check user is owner the shelter
     const checkLivestock: OutRelationLivestock | undefined = await this.livestocksRepository.getRelationLivestock(deleteImg.livestockId);
-    if(!checkLivestock) throw new ShelterNotFoundException();
-    if(checkLivestock.farm.user_id !== deleteImg.userId) throw new ShelterAccessException();
-    // name bucket
-    const bucketName = "smafarm"
-    // get pathname url, example -> "/storage/v1/object/public/smafarm/shelters/123/abc.jpg"
-    const parseUrl = new URL(deleteImg.url);
-    // split url become array string, example -> ["", "storage", "v1", "object", "public", "smafarm", "shelters", "123", "abc.jpg"]
-    const  partsUrl = parseUrl.pathname.split('/');
-    // search position index by bucketName
-    const bucketIndex = partsUrl.indexOf(bucketName);
-    // if not find bucket throw exception
-    if(bucketIndex === -1) throw new BucketNameException();
-    // get all path after bucketName, example -> ["shelters", "123", "abc.jpg"]
-    const rawPath = partsUrl.slice(bucketIndex + 1);
-    // decode raw path for convert special character like spaces
-    const decodedPath = rawPath.map(path => decodeURIComponent(path));
-    // combine raw path with slice for path
-    const filePath = decodedPath.join('/');
-    await this.supabase.storage.from(process.env.SUPABASE_BUCKET).remove([filePath]);
-    return { message: 'success deleted', url: deleteImg.url }    
+    if (!checkLivestock) throw new ShelterNotFoundException();
+    if (checkLivestock.farm.user_id !== deleteImg.userId) throw new ShelterAccessException();
+
+    const bucketName = "smafarm";
+    const filePaths: string[] = [];
+
+    for (const url of deleteImg.url) {
+      const parseUrl = new URL(url);
+      const partsUrl = parseUrl.pathname.split('/');
+      const bucketIndex = partsUrl.indexOf(bucketName);
+      if (bucketIndex === -1) throw new BucketNameException();
+
+      const rawPath = partsUrl.slice(bucketIndex + 1);
+      const decodedPath = rawPath.map(path => decodeURIComponent(path));
+      const filePath = decodedPath.join('/');
+      filePaths.push(filePath);
+    }
+
+    // delete all files at onces
+    const { error } = await this.supabase.storage
+      .from(process.env.SUPABASE_BUCKET)
+      .remove(filePaths);
+
+    if (error) throw new UploadException(error.message);
+
+    return { message: 'success deleted', url: deleteImg.url };
   }
 
 }

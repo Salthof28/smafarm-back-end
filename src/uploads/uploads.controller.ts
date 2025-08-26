@@ -77,14 +77,15 @@ export class UploadsController {
     }
   }
 
+  @UseInterceptors(FilesInterceptor('files'))
   @Post('livestock')
   @TransformRes(UrlBodyDto)
-  async uploadImgLivestock(@Request() request, @UploadedFile() file: Express.Multer.File, @Body() body: IdUploadDto): Promise<{ url: string }> {
+  async uploadImgLivestock(@Request() request, @UploadedFiles() files: Express.Multer.File[], @Body() body: IdUploadDto): Promise<{ url: string[] }> {
     try{
       const upload = await this.uploadsService.uploadImgLivestock({
         userId: request.user.id,
         livestockId: body.id,
-        file,
+        files,
       });
       return upload;
     } catch (error) {
@@ -93,18 +94,18 @@ export class UploadsController {
     }
   }
 
-  // @Delete('/livestock/deleted')
-  // async deleteImgLivestock(@Request() request, @Body() body: DeleteUrlDto): Promise<{ message: string, url: string }> {
-  //   try{
-  //     const deleteImg = await this.uploadsService.deleteImgLivestock({
-  //       userId: request.user.id,
-  //       livestockId: body.id,
-  //       url: body.url
-  //     });
-  //     return deleteImg
-  //   } catch (error) {
-  //     if(error instanceof CustomExceptionGen) throw error;
-  //     throw new InternalServerErrorException()
-  //   }
-  // }
+  @Delete('/livestock/deleted')
+  async deleteImgLivestock(@Request() request, @Body() body: DeleteUrlDto): Promise<{ message: string, url: string[] }> {
+    try{
+      const deleteImg = await this.uploadsService.deleteImgLivestock({
+        userId: request.user.id,
+        livestockId: body.id,
+        url: body.url
+      });
+      return deleteImg
+    } catch (error) {
+      if(error instanceof CustomExceptionGen) throw error;
+      throw new InternalServerErrorException()
+    }
+  }
 }

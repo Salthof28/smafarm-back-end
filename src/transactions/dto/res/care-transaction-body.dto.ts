@@ -43,4 +43,6 @@ export class CareTransactionBodyDto {
     @Expose()
     @Type(() => ShelterBodyDto)
     shelter: ShelterBodyDto;
+    @Expose()
+    transaction;
 }

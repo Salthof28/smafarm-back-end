@@ -193,13 +193,14 @@ export class TransactionsService implements TransactionsServiceItf {
         shelter_id: accesCare.shelter_id,
         start: startDate,
         finish: finishDate,
-      });
+        
+      }, "CARE");
+      console.log(allBookings)
       if(allBookings){
         const usedAccomodate = allBookings.reduce((sum, b) => sum + b.total_livestock,0);
-        let remaining = 0;
+        console.log(usedAccomodate)
         // count remaining
-        if((startDate >= oldStart && startDate <= oldFinish) || (finishDate >= oldStart && finishDate <= oldFinish)) remaining = accesCare.shelter.accomodate - usedAccomodate - accesCare.total_livestock;
-        else  remaining = accesCare.shelter.accomodate - usedAccomodate;
+        const remaining = accesCare.shelter.accomodate - usedAccomodate;
         if(accesCare.total_livestock > remaining) throw new TransactionErrorException('Shelter full capacity');
       }
       updated.care.duration_care = Math.ceil((finishDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
@@ -290,6 +291,11 @@ export class TransactionsService implements TransactionsServiceItf {
       const req  = requestedPerShelter.get(id) ?? 0;
       if (used + req > capInfo) throw new TransactionErrorException(`Shelter full: capacity ${capInfo}, already filled ${used}, new request ${req}`);
     }
+  }
+
+  async dropTransaction(id: number): Promise<Transaction> {
+    const deleted = await this.transactionsRepository.dropTransaction(id);
+    return deleted;
   }
 
 }
