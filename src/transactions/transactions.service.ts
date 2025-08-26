@@ -14,13 +14,23 @@ import { TransactionErrorException } from './exception/transaction-error-excepti
 import { Decimal } from '@prisma/client/runtime/library';
 import { ShelterNotFoundException } from 'src/shelters/exception/shelter-not-found-exception';
 import { ShelterAccessException } from 'src/shelters/exception/shelter-access-exception';
+import { FarmsRepositoryItf } from 'src/farms/farms.repository.interface';
+import { FarmNotFoundException } from 'src/farms/exception/farm-not-found-exception';
 
 @Injectable()
 export class TransactionsService implements TransactionsServiceItf {
-  constructor(@Inject('TransactionsRepositoryItf') private readonly transactionsRepository: TransactionsRepositoryItf, @Inject('SheltersRepositoryItf') private readonly sheltersRepository: SheltersRepositoryItf, @Inject('LivestocksRepositoryItf') private readonly livestocksRepository: LivestocksRepositoryItf){}
+  constructor(@Inject('TransactionsRepositoryItf') private readonly transactionsRepository: TransactionsRepositoryItf, @Inject('SheltersRepositoryItf') private readonly sheltersRepository: SheltersRepositoryItf, @Inject('LivestocksRepositoryItf') private readonly livestocksRepository: LivestocksRepositoryItf, @Inject('FarmsRepositoryItf') private readonly farmsRepository: FarmsRepositoryItf){}
 
   async getAllTransaction(query?: Condition): Promise<Transaction[]> {
     const allTransaction: Transaction[] | undefined = await this.transactionsRepository.getAll(query);
+    if(!allTransaction) throw new TransactionNotFoundException();
+    return allTransaction
+  };
+
+  async getAllTransactionBreeder(id: number): Promise<Transaction[]> {
+    const farmOne = await this.farmsRepository.getFarm(id);
+    if(!farmOne) throw new FarmNotFoundException('Your farm not registered');
+    const allTransaction: Transaction[] | undefined = await this.transactionsRepository.getAll({farm_id: farmOne.id});
     if(!allTransaction) throw new TransactionNotFoundException();
     return allTransaction
   };

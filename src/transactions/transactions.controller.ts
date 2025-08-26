@@ -21,8 +21,8 @@ import { TransactionErrorException } from './exception/transaction-error-excepti
 export class TransactionsController {
   constructor(@Inject('TransactionsServiceItf') private readonly transactionsService: TransactionsServiceItf) {}
 
-  // @UseGuards(RolesGuard)
-  // @Roles(Role.ADMIN)
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
   @UseGuards(JwtAuthGuard)
   @Get()
   @TransformRes(TransactionBodyDto)
@@ -48,6 +48,24 @@ export class TransactionsController {
       const customer_id: number = request.user.id
       const allTransactions: Transaction[] = await this.transactionsService.getAllTransaction({
         customer_id,
+      });
+      return allTransactions;
+    } catch (error) {
+      if(error instanceof CustomExceptionGen) throw error;
+      throw new InternalServerErrorException()
+    }    
+  };
+
+  @UseGuards(RolesGuard)
+  @Roles(Role.BREEDER)
+  @UseGuards(JwtAuthGuard)
+  @Get('historyBreeder')
+  @TransformRes(TransactionBodyDto)
+  async getHistoryTransactionBreeder(@Request() request): Promise<Transaction[]> {
+    try {
+      const id: number = request.user.id
+      const allTransactions: Transaction[] = await this.transactionsService.getAllTransaction({
+        id,
       });
       return allTransactions;
     } catch (error) {
