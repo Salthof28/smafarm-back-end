@@ -52,7 +52,6 @@ export class AuthController {
   @TransformRes(TokenBodyDto)
   async refreshToken(@Request() request, @Req() req: ExpressRequest): Promise<{ access_token: string, refresh_token: string }> {
     try {
-      console.log(request.user)
       const authHeader = req.headers['authorization'];
       const refreshToken = typeof authHeader === 'string' ? authHeader.split(' ')[1] : undefined;
       if(!refreshToken) throw new TokenException('undefined value')
@@ -68,7 +67,7 @@ export class AuthController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtRefreshGuard)
   @Delete('logout')
   @TransformRes(SessionBodyDto)
   async logout(@Request() request): Promise<SessionLogin> {
