@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { TransactionBuy, TransactionBuyCare, TransactionCare, TransactionsServiceItf, UpdateBuy, UpdateCare, UpdateCountTransaction, UpdateTransaction } from './transactions.service.interface';
+import { RatingService, TransactionBuy, TransactionBuyCare, TransactionCare, TransactionsServiceItf, UpdateBuy, UpdateCare, UpdateCountTransaction, UpdateTransaction } from './transactions.service.interface';
 import { OutAccessBuy, OutAccessCare, OutFarmIdTransaction, TransactionsRepositoryItf } from './transactions.repository.interface';
 import { CareGive, CareTransaction, DetailBuyTransaction, Livestock, Prisma, Transaction } from '@prisma/client';
 import { Condition } from '../global/entities/condition-entity';
@@ -291,6 +291,21 @@ export class TransactionsService implements TransactionsServiceItf {
       const req  = requestedPerShelter.get(id) ?? 0;
       if (used + req > capInfo) throw new TransactionErrorException(`Shelter full: capacity ${capInfo}, already filled ${used}, new request ${req}`);
     }
+  }
+
+  async reviewTransaction(review: RatingService): Promise<Transaction> {
+    // check access
+    const getTransaction: OutFarmIdTransaction | undefined = await this.transactionsRepository.getOne(review.id_transaction);
+    if(!getTransaction) throw new TransactionNotFoundException();
+    if(getTransaction.customer_id !== review.user_id) throw new TransactionErrorException('not have access to updated this transaction');
+    // process
+    const reviewed = await this.transactionsRepository.reviewTransaction({
+      id_transaction: review.id_transaction,
+      farm_id: getTransaction.farm_id,
+      rating: review.rating,
+      review: review.review
+    });
+    return reviewed;
   }
 
   async dropTransaction(id: number): Promise<Transaction> {

@@ -24,8 +24,16 @@ export interface TransactionsServiceItf {
     countUpdateTransaction(count: UpdateCountTransaction): Promise<Decimal>;
     checkShelterAvaibility(careList: CreateCareTransactionDto[]): Promise<void>;
     dropTransaction(id: number): Promise<Transaction>;
+    reviewTransaction(review: RatingService): Promise<Transaction>;
 }
 
+export interface RatingService {
+    id_transaction: number,
+    user_id: number
+    // farm_id: number,
+    rating: number,
+    review?: string,
+}
 export interface TransactionCare {
     transaction: TransactionDto,
     care: CreateCareTransactionDto[],

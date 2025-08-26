@@ -114,7 +114,7 @@ model ImgLivestocks {
   id                    Int                       @id @default(autoincrement())
   livestock_id          Int
   url                   String                    @db.Text()
-  livestock             Livestock                 @relation(fields: [livestock_id], references: [id])
+  livestock             Livestock                 @relation(fields: [livestock_id], references: [id], onDelete: Cascade)
 }
 
 model Shelter {
@@ -139,7 +139,7 @@ model ImgShelter {
   id                    Int                       @id @default(autoincrement())
   shelter_id            Int
   url                   String                    @db.Text()
-  shelter               Shelter                   @relation(fields: [shelter_id], references: [id])
+  shelter               Shelter                   @relation(fields: [shelter_id], references: [id], onDelete: Cascade)
 }
 
 model CareGive {
@@ -149,7 +149,7 @@ model CareGive {
   price                 Decimal                   @db.Decimal(15,2)
   unit                  UnitCare
   required              Boolean
-  shelter               Shelter                   @relation(fields: [shelter_id], references: [id])
+  shelter               Shelter                   @relation(fields: [shelter_id], references: [id], onDelete: Cascade)
   transaction           DetailCareTransaction[]
 }
 model Transaction {

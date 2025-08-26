@@ -15,6 +15,7 @@ import { UpdateCareTransactionDto } from './dto/req/update-care-transation.dto';
 import { TransformRes } from '../global/interceptors/transform-body-res.interceptor';
 import { TransactionBodyDto } from './dto/res/transaction-body.dto';
 import { CareTransactionBodyDto } from './dto/res/care-transaction-body.dto';
+import { TransactionErrorException } from './exception/transaction-error-exception';
 
 @Controller('transactions')
 export class TransactionsController {
@@ -191,6 +192,26 @@ export class TransactionsController {
         care: body
       });
       return updateCare;
+    } catch (error) {
+      if(error instanceof CustomExceptionGen) throw error;
+      throw new InternalServerErrorException()
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('review/:id')
+  @TransformRes(TransactionBodyDto)
+  async reviewTransaction(@Param('id', ParseIntPipe) id: number, @Request() request, @Body() body: UpdateTransactionDto): Promise<Transaction> {
+    try {
+      const user_id: number = request.user.id
+      if(!body.rating) throw new TransactionErrorException('you not input rating');
+      const review: Transaction = await this.transactionsService.reviewTransaction({
+        id_transaction: id,
+        user_id,
+        rating: body.rating,
+        review: body.review
+      }) ;
+      return review;
     } catch (error) {
       if(error instanceof CustomExceptionGen) throw error;
       throw new InternalServerErrorException()

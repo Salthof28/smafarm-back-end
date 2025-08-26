@@ -22,8 +22,15 @@ export interface TransactionsRepositoryItf {
     createdBuyCareTransaction(create: CreateBuyCareTransaction): Promise<Transaction>;
     updatedDetailBuy(upBuy: UpdateDetailBuy): Promise<DetailBuyTransaction>;
     dropTransaction(id: number): Promise<Transaction>;
+    reviewTransaction(review: Rating): Promise<Transaction>;
 }
 
+export interface Rating {
+    id_transaction: number,
+    farm_id: number,
+    rating: number,
+    review?: string,
+}
 export interface AllCareBooking {
     shelter_id: number, 
     start: Date, 

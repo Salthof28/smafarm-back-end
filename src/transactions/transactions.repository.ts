@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AllBooking, AllCareBooking, CreateBuyCareTransaction, CreateTransactionBuy, CreateTransactionCare, OutAccessBuy, OutAccessCare, OutAllBooking, OutFarmIdTransaction, TransactionsRepositoryItf, UpdateCareTransaction, UpdateDetailBuy, UpdateTransaction } from './transactions.repository.interface';
+import { AllBooking, AllCareBooking, CreateBuyCareTransaction, CreateTransactionBuy, CreateTransactionCare, OutAccessBuy, OutAccessCare, OutAllBooking, OutFarmIdTransaction, Rating, TransactionsRepositoryItf, UpdateCareTransaction, UpdateDetailBuy, UpdateTransaction } from './transactions.repository.interface';
 import { PrismaService } from 'prisma/prisma.service';
 import { Condition } from '../global/entities/condition-entity';
 import { handlePrismaError } from '../global/utils/prisma.error.util';
@@ -419,5 +419,45 @@ export class TransactionsRepository implements TransactionsRepositoryItf {
         } catch (error) {
             handlePrismaError(error);
         }    
+    }
+
+    async reviewTransaction(review: Rating): Promise<Transaction> {
+        try {
+            const ratingTransaction: Transaction = await this.prisma.$transaction(async (tx) => { 
+                const updateTransaction: Transaction = await tx.transaction.update({
+                    where: {
+                        id: review.id_transaction
+                    },
+                    data: {
+                        rating: review.rating,
+                        review: review.review,
+                        status_transaction: "FINISH"
+                    }
+                });
+
+                const avgRating = await tx.transaction.aggregate({
+                    where: {
+                        farm_id: review.farm_id,
+                        status_transaction: 'FINISH',
+                    },
+                    _avg: {
+                        rating: true,
+                    },
+                });
+
+                await tx.farms.update({
+                    where: {
+                        id: review.farm_id
+                    },
+                    data: {
+                        rating: avgRating._avg.rating
+                    }
+                })
+                return updateTransaction
+            });
+            return ratingTransaction;
+        } catch (error) {
+            handlePrismaError(error);
+        }  
     }
 }
