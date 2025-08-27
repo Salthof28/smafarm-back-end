@@ -11,7 +11,7 @@ import { Decimal } from "@prisma/client/runtime/library";
 
 export interface TransactionsServiceItf {
     getAllTransaction(query?: Condition): Promise<Transaction[]>;
-    getAllTransactionBreeder(id: number): Promise<Transaction[]>
+    getAllTransactionBreeder(user_id: number): Promise<Transaction[]>
     getAllCareByShelter(shelter_id: number): Promise<CareTransaction[]>;
     getTransaction(id: number): Promise<Transaction>;
     transactionCare(transCare: TransactionCare): Promise<Transaction>;
@@ -27,6 +27,7 @@ export interface TransactionsServiceItf {
     dropTransaction(id: number): Promise<Transaction>;
     reviewTransaction(review: RatingService): Promise<Transaction>;
 }
+
 
 export interface RatingService {
     id_transaction: number,

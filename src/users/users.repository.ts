@@ -1,7 +1,7 @@
 // because function callback, we use promisify to be able use in async await function. scrypt change password to string
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "prisma/prisma.service";
-import { UpdatedUser, UsersRepositoryItf } from "./users.repository.interface";
+import { OutDetailProfile, UpdatedUser, UsersRepositoryItf } from "./users.repository.interface";
 import { SessionLogin, Users } from "@prisma/client";
 import { Condition } from "../global/entities/condition-entity";
 import { CreateUserDto } from "./dto/req/create-user.dto";
@@ -43,7 +43,7 @@ export class UsersRepository implements UsersRepositoryItf {
 
     }
 
-    async findById(id: number): Promise<Users | undefined> {
+    async findById(id: number): Promise<OutDetailProfile | undefined> {
         try {
             const user = await this.prisma.users.findUnique({
                 where: {

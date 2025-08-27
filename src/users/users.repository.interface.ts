@@ -8,7 +8,7 @@ import { UpdateUserDto } from "./dto/req/update-user.dto";
 export interface UsersRepositoryItf {
     getAllUser(query?: Condition): Promise<Users[] | undefined>;
     findEmail(email: string): Promise<Users | undefined>;
-    findById(id: number): Promise<Users | undefined>;
+    findById(id: number): Promise<OutDetailProfile | undefined>;
     findExistingUser(condition: Condition[]): Promise<Users | undefined>;
     created(body: CreateUserDto): Promise<Users>;
     updatedProfile(user: UpdatedUser): Promise<Users>;
@@ -25,6 +25,8 @@ export interface UpdatedUser {
     id: number,
     body: Partial<UpdateUserDto>
 }
+
+export type OutDetailProfile = (Users & { farms: { id: number } | null });
 
 
 

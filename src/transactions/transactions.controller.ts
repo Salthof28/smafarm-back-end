@@ -16,6 +16,7 @@ import { TransformRes } from '../global/interceptors/transform-body-res.intercep
 import { TransactionBodyDto } from './dto/res/transaction-body.dto';
 import { CareTransactionBodyDto } from './dto/res/care-transaction-body.dto';
 import { TransactionErrorException } from './exception/transaction-error-exception';
+import { ReqHistoryBreeder } from './dto/req/req-history-breeder.dto';
 
 @Controller('transactions')
 export class TransactionsController {
@@ -63,10 +64,8 @@ export class TransactionsController {
   @TransformRes(TransactionBodyDto)
   async getHistoryTransactionBreeder(@Request() request): Promise<Transaction[]> {
     try {
-      const id: number = request.user.id
-      const allTransactions: Transaction[] = await this.transactionsService.getAllTransaction({
-        id,
-      });
+      const user_id: number = request.user.id
+      const allTransactions: Transaction[] = await this.transactionsService.getAllTransactionBreeder(user_id);
       return allTransactions;
     } catch (error) {
       if(error instanceof CustomExceptionGen) throw error;

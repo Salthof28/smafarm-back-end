@@ -8,7 +8,7 @@ import { UpdateDetailBuyDto } from "./dto/req/update-detail-buy.dto";
 import { CareTransaction, DetailBuyTransaction, DetailCareTransaction, Transaction } from "@prisma/client";
 
 export interface TransactionsRepositoryItf {
-    getAll(query?: Condition): Promise<Transaction[] | undefined>;
+    getAll(query?: Condition): Promise<Transaction[]>;
     getAllCareByShelter(shelter_id: number): Promise<CareTransaction[]>;
     getAllCare(transaction_id?: number, booking?: AllCareBooking, status?: string): Promise<CareTransaction[]>;
     getAllbooking(booking: AllBooking[]): Promise<OutAllBooking[]>

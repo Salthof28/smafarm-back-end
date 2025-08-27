@@ -9,7 +9,7 @@ import { CareTransaction, DetailBuyTransaction, StatusTransaction, Transaction }
 export class TransactionsRepository implements TransactionsRepositoryItf {
     constructor(private readonly prisma: PrismaService){}
 
-    async getAll(query?: Condition): Promise<Transaction[] | undefined> {
+    async getAll(query?: Condition): Promise<Transaction[]> {
         try {
             const where: Condition = {}
             if(query?.customer_id || query?.farm_id || query?.transaction_status){
@@ -52,7 +52,6 @@ export class TransactionsRepository implements TransactionsRepositoryItf {
                     date_transaction: 'desc'
                 }
             })
-            if(allTransaction.length < 1) return undefined;
             return allTransaction;
         } catch (error) {
             handlePrismaError(error);
