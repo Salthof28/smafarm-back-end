@@ -19,7 +19,11 @@ export class UsersRepository implements UsersRepositoryItf {
         const where: Condition = {};
         if(query?.name || query?.email || query?.phone) {
             where.OR = [];
-            if(query.name) where.OR.push({name: query.name});
+            if(query.name) where.OR.push({name: {
+                    contains: query.name,
+                    mode: 'insensitive'
+                }
+            });
             if(query.email) where.OR.push({email: query.email});
             if(query.phone) where.OR.push({phone: query.phone});
         };

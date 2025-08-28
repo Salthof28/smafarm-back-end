@@ -14,7 +14,11 @@ export class FarmsRepository implements FarmsRepositoryItf {
             const where: Condition = {};
             if(query?.name || query?.location || query?.rating) {
                 where.OR = [];
-                if(query.name) where.OR.push({ name: query.name });
+                if(query.name) where.OR.push({name: {
+                        contains: query.name,
+                        mode: 'insensitive'
+                    }
+                });
                 if(query.location) where.OR.push({ location: query.location });
                 if(query.rating) where.OR.push({ rating: query.rating });
             };
