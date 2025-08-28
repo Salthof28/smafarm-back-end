@@ -10,8 +10,7 @@ export class FarmsService implements FarmsServiceItf {
     constructor(@Inject('FarmsRepositoryItf') private readonly farmsRepository: FarmsRepositoryItf){}
 
     async getAllFarms(query?: Condition): Promise<Farms[]> {
-        const allFarms: Farms[] | undefined = await this.farmsRepository.getAll(query);
-        if(!allFarms) throw new FarmNotFoundException();
+        const allFarms: Farms[] = await this.farmsRepository.getAll(query);
         return allFarms;
     };
     

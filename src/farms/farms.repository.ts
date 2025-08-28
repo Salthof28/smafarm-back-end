@@ -9,7 +9,7 @@ import { handlePrismaError } from "src/global/utils/prisma.error.util";
 export class FarmsRepository implements FarmsRepositoryItf {
     constructor(private readonly prisma: PrismaService){}
 
-    async getAll(query?: Condition): Promise<Farms[] | undefined> {
+    async getAll(query?: Condition): Promise<Farms[]> {
         try {
             const where: Condition = {};
             if(query?.name || query?.location || query?.rating) {
@@ -18,8 +18,25 @@ export class FarmsRepository implements FarmsRepositoryItf {
                 if(query.location) where.OR.push({ location: query.location });
                 if(query.rating) where.OR.push({ rating: query.rating });
             };
-            const allFarms: Farms[] = await this.prisma.farms.findMany({ where });
-            if(allFarms.length < 1) return undefined;
+            const allFarms: Farms[] = await this.prisma.farms.findMany({
+                where,
+                include: {
+                    shelters: {
+                        select: {
+                            name: true,
+                            accomodate: true,
+                            price_daily: true
+                        }
+                    },
+                    livestock: {
+                        select: {
+                            name: true,
+                            stock: true,
+                            price: true
+                        }
+                    }
+                }
+            });
             return allFarms;
         } catch (error) {
             handlePrismaError(error);
@@ -83,6 +100,7 @@ export class FarmsRepository implements FarmsRepositoryItf {
                     name: farm.body.name,
                     location: farm.body.location,
                     img_farm: farm.body.img_farm,
+                    status_farm: 'ACTIVE'
                 }
             });
             return createFarm;
@@ -116,6 +134,7 @@ export class FarmsRepository implements FarmsRepositoryItf {
                     name: farm.body.name,
                     location: farm.body.location,
                     img_farm: farm.body.img_farm,
+                    status_farm: farm.body.status_farm,
                     updated_at: new Date()
                 }
             });

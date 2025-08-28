@@ -4,7 +4,7 @@ import { CreateFarmDto } from "./dto/req/create-farm.dto";
 import { UpdateFarmDto } from "./dto/req/update-farm.dto";
 
 export interface FarmsRepositoryItf {
-    getAll(query?: Condition): Promise<Farms[] | undefined>;
+    getAll(query?: Condition): Promise<Farms[]>;
     getFarm(id: number): Promise<Farms | undefined>;
     getShelterFarm(id: number): Promise<Farms | undefined>;
     getFarmByUserId(user_id: number): Promise<Farms | undefined>;

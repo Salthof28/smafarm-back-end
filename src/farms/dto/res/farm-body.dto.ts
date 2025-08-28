@@ -1,4 +1,5 @@
 import { Expose, Type } from "class-transformer";
+import { LivestockBodyDto } from "src/livestocks/dto/res/livestock-body.dto";
 import { ShelterBodyDto } from "src/shelters/dto/res/shelter-body.dto";
 
 export class FarmBodyDto {
@@ -16,6 +17,9 @@ export class FarmBodyDto {
     location: string;
     @Expose()
     @Type(() => String)
+    status_farm: string
+    @Expose()
+    @Type(() => String)
     img_farm: string;
     @Expose()
     @Type(() => String)
@@ -29,4 +33,8 @@ export class FarmBodyDto {
     @Expose()
     @Type(() => ShelterBodyDto)
     shelters: ShelterBodyDto[];
+    @Expose()
+    @Type(() => LivestockBodyDto)
+    livestock: LivestockBodyDto[];
+
 }

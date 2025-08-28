@@ -80,6 +80,7 @@ model Farms {
   id            Int           @id @default(autoincrement())
   user_id       Int           @unique
   name          String        @db.VarChar(100)
+  status_farm   StatusUser    
   location      String        @db.VarChar(320)
   img_farm      String        @default("no img") @db.Text()
   rating        Float?        @default(0)
