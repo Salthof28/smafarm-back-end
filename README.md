@@ -80,6 +80,11 @@ or
 pnpm run start:dev
 
 ```
+
+## Link Demo
+
+**Live Demo:** [smafarm-be](https://3a9faba3-4e26-4988-b04a-1d21b7e8014e-00-nz4pnvue4orv.pike.replit.dev:3000)
+
 ## If You Want Test Login
 ### Admin
 ```bash
