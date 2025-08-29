@@ -51,20 +51,50 @@ It provides endpoints for managing users, shelters, livestock, transactions, and
 | `GET` | `/transactions/transactionbuy/:id` | Get details of a specific purchase transaction. |
 
 ---
+## ERD Database
+![](./image-markdown/ERD-Database.png) 
 
-## Example Requests
 
-### 1. Register a new user
+## Install Project
+### Clone my project and install
 ```bash
-POST /auth/register
-Content-Type: application/json
+git clone https://github.com/revou-fsse-feb25/final-project-be-Salthof28.git
 
-{
-  "name": "John Doe",
-  "email": "john@mail.com",
-  "password": "john123"
-}
+cd final-project-be-Salthof28
+
+npm install 
+or 
+pnpm install
+
 ```
+### setting .env
+Create a .env file. Check the .env.example file for the proper format and variables.
+### run project
+```bash
+npx prisma migrate dev
+or
+pnpx prisma migrate dev
 
+npm run start:dev
+or
+pnpm run start:dev
+
+```
+## If You Want Test Login
+### Admin
+```bash
+email: jane@mail.com
+password: jane123
+```
+### Breeder
+```bash
+email: taiga@mail.com
+password: taiga123
+```
+### Customer
+```bash
+email: john@mail.com
+password: john123
+```
 ## Author
 🔧 Salman Althof
