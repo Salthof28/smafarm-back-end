@@ -7,9 +7,10 @@ import { UpdateCareDto } from "./dto/req/update-care.dto";
 
 export interface SheltersRepositoryItf {
     getAllShelter(query?: Condition): Promise<Shelter[]>;
+    getAllShelterTransaction(id?: number[]): Promise<Shelter[]>;
     getShelter(id: number): Promise<OutDetailShelter | undefined>;
     getRelationShelter(id: number): Promise<{ farm: { user_id: number } } | undefined>;
-    getAllCare(id?: number[]): Promise<OutCareShelter[] | undefined>;
+    getAllCare(id?: number[]): Promise<OutCareShelter[]>;
     getRelationCare(id: number): Promise<{ shelter: { farm: { user_id: number } } } | undefined>;
     createdShelter(newShel: NewShelter): Promise<Shelter>;
     updatedShelter(upShel: UpdateShelter): Promise<Shelter>;

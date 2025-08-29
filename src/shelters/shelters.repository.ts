@@ -68,6 +68,19 @@ export class SheltersRepository implements SheltersRepositoryItf {
         }
     };
 
+    async getAllShelterTransaction(id?: number[]): Promise<Shelter[]> {
+        try {
+            const where: any = {}
+            if(id) where.id = { in: id }
+            const allShelter: Shelter[] = await this.prisma.shelter.findMany({ 
+                where
+            });
+            return allShelter;
+        } catch (error) {
+            handlePrismaError(error);
+        }    
+    }
+
     async getShelter(id: number): Promise<OutDetailShelter | undefined> {
         try {
             const shelter: OutDetailShelter | null = await this.prisma.shelter.findUnique({
@@ -103,7 +116,7 @@ export class SheltersRepository implements SheltersRepositoryItf {
         }
     }
     
-    async getAllCare(id?: number[]): Promise<OutCareShelter[] | undefined> {
+    async getAllCare(id?: number[]): Promise<OutCareShelter[]> {
         try {
             const where: any = {}
             if(id) where.id = { in: id }
@@ -118,7 +131,6 @@ export class SheltersRepository implements SheltersRepositoryItf {
                     }
                 }
             });
-            if(allCare.length < 1) return undefined;
             return allCare
         } catch (error) {
             handlePrismaError(error);

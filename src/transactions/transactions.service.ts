@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { RatingService, TransactionBuy, TransactionBuyCare, TransactionCare, TransactionsServiceItf, UpdateBuy, UpdateCare, UpdateCountTransaction, UpdateTransaction } from './transactions.service.interface';
 import { OutAccessBuy, OutAccessCare, OutFarmIdTransaction, TransactionsRepositoryItf } from './transactions.repository.interface';
-import { CareGive, CareTransaction, DetailBuyTransaction, Livestock, Prisma, Transaction, Users } from '@prisma/client';
+import { CareGive, CareTransaction, DetailBuyTransaction, Livestock, Prisma, Shelter, Transaction, Users } from '@prisma/client';
 import { Condition } from '../global/entities/condition-entity';
 import { TransactionNotFoundException } from './exception/transaction-not-found-exception';
 import { OutAccomodate, OutCareShelter, SheltersRepositoryItf } from '../shelters/shelters.repository.interface';
@@ -59,18 +59,21 @@ export class TransactionsService implements TransactionsServiceItf {
   async countCare(care: CreateCareTransactionDto[]): Promise<CreateCareTransactionDto[]> {
     // collect all id care "new set" delete value duplicate
     const allIdCareGive = [...new Set(care.flatMap(tc => tc.careGive_id))];
+    const allIdShelter = care.flatMap(cr => cr.shelter_id);
     // get all care by id
-    const getAllCare: OutCareShelter[] | undefined = await this.sheltersRepository.getAllCare(allIdCareGive);
-    if(!getAllCare) throw new CareNotFoundException();
+    const getAllCare: OutCareShelter[] = await this.sheltersRepository.getAllCare(allIdCareGive);
+    const getAllShelter: Shelter[] = await this.sheltersRepository.getAllShelterTransaction(allIdShelter)
+    // if(!getAllCare) throw new CareNotFoundException('Care want buy not found');
     // for map id -> price (lookup table not array) return { 1 => 1000, 2 => 2000, 3 => 3000 }
     // alternatif can convert array object to one object (use reduce)
     const priceCareMap = new Map(getAllCare.map(cg => [cg.id, { price: cg.price, unit: cg.unit }]));
-    const priceShelter = getAllCare.reduce((map, cg) => {
-      if (!map.has(cg.shelter_id)) {
-        map.set(cg.shelter_id, cg.shelter.price_daily);
+    const priceShelter = getAllShelter.reduce((map, cg) => {
+      if (!map.has(cg.id)) {
+        map.set(cg.id, cg.price_daily);
       }
       return map;
     }, new Map<number, Prisma.Decimal>());
+  
     // update transaction care 
     care = care.map(tc => {
       const carePrice = tc.careGive_id.reduce((sum, id) => {
@@ -111,7 +114,7 @@ export class TransactionsService implements TransactionsServiceItf {
   async countBuy(buy: CreateDetailBuyDto[]): Promise<CreateDetailBuyDto[]> {
     const allIdLivestock = buy.flatMap(tb => tb.livestock_id);
     const getAllLivestock: Livestock[] | undefined = await this.livestocksRepository.getAllLiveTransaction(allIdLivestock);
-    if(!getAllLivestock) throw new LivestockNotFoundException();
+    if(!getAllLivestock) throw new LivestockNotFoundException('Livestock want buy not found');
     const priceLivestock = new Map(getAllLivestock.map(pl => [pl.id, pl.price]));
 
     buy = buy.map(tb => {
@@ -193,8 +196,6 @@ export class TransactionsService implements TransactionsServiceItf {
 
     // count duration
     if(updated.care.start_date && updated.care.finish_date) {
-      const oldStart = accesCare.start_date;
-      const oldFinish = accesCare.finish_date;
       const startDate = new Date(updated.care.start_date);
       const finishDate = new Date(updated.care.finish_date);
       const allBookings = await this.transactionsRepository.getAllCare(undefined, {
@@ -203,10 +204,8 @@ export class TransactionsService implements TransactionsServiceItf {
         finish: finishDate,
         
       }, "CARE");
-      console.log(allBookings)
       if(allBookings){
         const usedAccomodate = allBookings.reduce((sum, b) => sum + b.total_livestock,0);
-        console.log(usedAccomodate)
         // count remaining
         const remaining = accesCare.shelter.accomodate - usedAccomodate;
         if(accesCare.total_livestock > remaining) throw new TransactionErrorException('Shelter full capacity');
